@@ -1,0 +1,81 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #f4f4f4;
+  margin: 0;
+  padding: 20px;
+}
+
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1,
+h2 {
+  color: #333;
+}
+
+.note-form,
+.search-bar,
+.note-list {
+  margin-bottom: 20px;
+}
+
+.note-form input,
+.note-form textarea,
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.note-form textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.note-form button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: #0077cc;
+  color: white;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.note-form button:hover {
+  background-color: #005fa3;
+}
+
+.note-item {
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.note-item h3 {
+  margin-top: 0;
+}
+
+.note-item button {
+  margin-right: 10px;
+  background-color: #e74c3c;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.note-item button.archive-btn {
+  background-color: #2ecc71;
+}
+
+.note-item button:hover {
+  opacity: 0.8;
+}
