@@ -21,10 +21,11 @@ h2 {
   display: flex;
   flex-direction: column;
   margin-bottom: 20px;
-  background-color: #fff;
+  background-color: purple;
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+  border: 3px solid;
 }
 
 .note-form input,
@@ -34,6 +35,7 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1em;
+  border: 3px solid;
 }
 
 .note-form button {
@@ -95,11 +97,16 @@ h2 {
   color: white;
 }
 
+.search-bar {
+  color: #222;
+}
+
 .search-bar input {
   padding: 10px;
   width: 100%;
   margin-bottom: 16px;
-  border: 1px solid #ccc;
+  border: 3px solid #ccc;
   border-radius: 6px;
   font-size: 1em;
+  color: black;
 }

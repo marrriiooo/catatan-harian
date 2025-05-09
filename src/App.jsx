@@ -37,7 +37,6 @@ function App() {
       <SearchBar keyword={searchKeyword} onSearch={setSearchKeyword} />
       <NoteForm onAddNote={addNote} />
 
-      <h2>Catatan Aktif</h2>
       <NoteList
         notes={activeNotes}
         onDelete={deleteNote}
