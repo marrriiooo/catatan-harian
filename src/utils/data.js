@@ -1,6 +1,6 @@
 // src/utils/data.js
 
-const getInitialData = () => [
+export const getInitialData = () => [
   {
     id: +new Date(),
     title: "Babel",

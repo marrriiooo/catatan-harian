@@ -1,8 +1,6 @@
-// src/components/NoteList.jsx
-
 import NoteItem from "./NoteItem";
 
-function NoteList({ notes }) {
+function NoteList({ notes, onDelete, onArchive }) {
   if (notes.length === 0) {
     return <p>Tidak ada catatan</p>;
   }
@@ -12,9 +10,13 @@ function NoteList({ notes }) {
       {notes.map((note) => (
         <NoteItem
           key={note.id}
+          id={note.id}
           title={note.title}
           body={note.body}
           createdAt={note.createdAt}
+          archived={note.archived}
+          onDelete={onDelete}
+          onArchive={onArchive}
         />
       ))}
     </div>

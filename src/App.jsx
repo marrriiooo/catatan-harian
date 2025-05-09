@@ -1,11 +1,11 @@
 import React, { useState } from "react";
-import { initialData } from "./utils/data";
+import getInitialData from "./utils/data";
 import NoteForm from "./components/NoteForm";
 import NoteList from "./components/NoteList";
 import SearchBar from "./components/SearchBar";
 
 function App() {
-  const [notes, setNotes] = useState(initialData);
+  const [notes, setNotes] = useState(getInitialData());
   const [searchKeyword, setSearchKeyword] = useState("");
 
   const addNote = (newNote) => {
