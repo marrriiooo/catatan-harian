@@ -1,3 +1,5 @@
+import { showFormattedDate } from "../utils/data";
+
 function NoteItem({
   id,
   title,
@@ -12,7 +14,7 @@ function NoteItem({
       <h3>{title}</h3>
       <p>{body}</p>
       <small style={{ color: "greenyellow", fontWeight: "bold" }}>
-        {new Date(createdAt).toLocaleString()}
+        {showFormattedDate(createdAt)}
       </small>
       <div style={{ marginTop: "10px" }}>
         <button onClick={() => onDelete(id)}>Hapus</button>
