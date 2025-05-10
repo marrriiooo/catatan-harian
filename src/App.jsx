@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { getInitialData } from "./utils/data";
+import { getInitialData } from "./utils";
 import NoteForm from "./components/NoteForm";
 import NoteList from "./components/NoteList";
 import SearchBar from "./components/SearchBar";

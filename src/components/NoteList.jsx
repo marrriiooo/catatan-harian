@@ -2,7 +2,7 @@ import NoteItem from "./NoteItem";
 
 function NoteList({ notes, onDelete, onArchive }) {
   if (notes.length === 0) {
-    return <p>Tidak ada catatan</p>;
+    return <p style={{ fontWeight: "bold" }}>Tidak ada catatan</p>;
   }
 
   return (

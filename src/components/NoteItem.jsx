@@ -1,4 +1,4 @@
-import { showFormattedDate } from "../utils/data";
+import { showFormattedDate } from "../utils";
 
 function NoteItem({
   id,
@@ -13,7 +13,7 @@ function NoteItem({
     <div className="note-item">
       <h3>{title}</h3>
       <p>{body}</p>
-      <small style={{ color: "greenyellow", fontWeight: "bold" }}>
+      <small style={{ color: "purple", fontWeight: "bold" }}>
         {showFormattedDate(createdAt)}
       </small>
       <div style={{ marginTop: "10px" }}>
