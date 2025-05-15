@@ -1,4 +1,5 @@
 import { showFormattedDate } from "../utils";
+import PropTypes from "prop-types";
 
 function NoteItem({
   id,
@@ -25,5 +26,15 @@ function NoteItem({
     </div>
   );
 }
+
+NoteItem.propTypes = {
+  id: PropTypes.number.isRequired,
+  title: PropTypes.string.isRequired,
+  body: PropTypes.string.isRequired,
+  createdAt: PropTypes.string.isRequired,
+  archived: PropTypes.bool.isRequired,
+  onDelete: PropTypes.func.isRequired,
+  onArchive: PropTypes.func.isRequired,
+};
 
 export default NoteItem;

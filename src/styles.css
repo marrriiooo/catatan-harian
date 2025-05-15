@@ -13,7 +13,8 @@ body {
 }
 
 h1,
-h2 {
+h2,
+.nav-link {
   color: white;
   font-family: "pacifio", cursive;
 }
@@ -84,4 +85,32 @@ h2 {
 
 .note-item button:hover {
   opacity: 0.8;
+}
+
+/* navigasi  */
+.nav-container {
+  padding: 10px 20px;
+  margin-top: 10px;
+}
+
+.nav-list {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  transition: color 0.2s;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.nav-link:hover {
+  background-color: #e2e8f0;
 }

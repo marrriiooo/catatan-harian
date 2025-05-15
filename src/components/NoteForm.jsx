@@ -1,16 +1,19 @@
 import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import PropTypes from "prop-types";
+
+// ...
 
 const MAX_TITLE_LENGTH = 50;
 
 function NoteForm({ onAddNote }) {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
+  const navigate = useNavigate();
 
   const handleSubmit = (e) => {
     e.preventDefault();
-
     if (!title.trim() || !body.trim()) return;
-
     const newNote = {
       id: +new Date(),
       title: title.trim(),
@@ -22,6 +25,7 @@ function NoteForm({ onAddNote }) {
     onAddNote(newNote);
     setTitle("");
     setBody("");
+    navigate("/");
   };
 
   const handleTitleChange = (e) => {
@@ -52,4 +56,7 @@ function NoteForm({ onAddNote }) {
   );
 }
 
+NoteForm.propTypes = {
+  onAddNote: PropTypes.func.isRequired,
+};
 export default NoteForm;

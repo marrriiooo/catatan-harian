@@ -1,12 +1,12 @@
 import React, { useState } from "react";
+import { Routes, Route } from "react-router-dom";
 import { getInitialData } from "./utils";
-import NoteForm from "./components/NoteForm";
-import NoteList from "./components/NoteList";
-import SearchBar from "./components/SearchBar";
+import Navigation from "./components/Navigation";
+import HomePage from "./pages/HomePage";
+import AddPage from "./pages/AddPage";
 
 function App() {
   const [notes, setNotes] = useState(getInitialData());
-  const [searchKeyword, setSearchKeyword] = useState("");
 
   const addNote = (newNote) => {
     setNotes([newNote, ...notes]);
@@ -24,31 +24,27 @@ function App() {
     );
   };
 
-  const filteredNotes = notes.filter((note) =>
-    note.title.toLowerCase().includes(searchKeyword.toLowerCase())
-  );
-
-  const activeNotes = filteredNotes.filter((note) => !note.archived);
-  const archivedNotes = filteredNotes.filter((note) => note.archived);
-
   return (
     <div className="app-container">
-      <h1>Catatan Pribadi</h1>
-      <SearchBar keyword={searchKeyword} onSearch={setSearchKeyword} />
-      <NoteForm onAddNote={addNote} />
-
-      <NoteList
-        notes={activeNotes}
-        onDelete={deleteNote}
-        onArchive={toggleArchive}
-      />
-
-      <h2>Catatan Arsip</h2>
-      <NoteList
-        notes={archivedNotes}
-        onDelete={deleteNote}
-        onArchive={toggleArchive}
-      />
+      <header>
+        <h1>Catatan Pribadi</h1>
+        <Navigation />
+      </header>
+      <main>
+        <Routes>
+          <Route
+            path="/"
+            element={
+              <HomePage
+                notes={notes}
+                onDelete={deleteNote}
+                onArchive={toggleArchive}
+              />
+            }
+          />
+          <Route path="/add" element={<AddPage onAddNote={addNote} />} />
+        </Routes>
+      </main>
     </div>
   );
 }
