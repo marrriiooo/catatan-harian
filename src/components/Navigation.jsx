@@ -24,7 +24,7 @@ const Navigation = () => {
               location.pathname === "/add" ? "nav-link active" : "nav-link"
             }
           >
-            Tambah Catatan
+            Detail Catatan
           </Link>
         </li>
       </ul>

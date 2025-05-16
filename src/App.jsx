@@ -37,6 +37,7 @@ function App() {
             element={
               <HomePage
                 notes={notes}
+                onAddNote={addNote}
                 onDelete={deleteNote}
                 onArchive={toggleArchive}
               />

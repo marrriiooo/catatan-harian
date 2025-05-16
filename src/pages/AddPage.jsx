@@ -5,7 +5,7 @@ import NoteForm from "../components/NoteForm";
 const AddPage = ({ onAddNote }) => {
   return (
     <>
-      <h2>Tambah Catatan</h2>
+      <h2>Detail catatan</h2>
       <NoteForm onAddNote={onAddNote} />
     </>
   );
