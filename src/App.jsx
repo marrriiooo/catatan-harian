@@ -4,6 +4,8 @@ import { getInitialData } from "./utils";
 import Navigation from "./components/Navigation";
 import HomePage from "./pages/HomePage";
 import AddPage from "./pages/AddPage";
+import ArchivePage from "./pages/ArchivePage";
+import DetailPage from "./pages/DetailPage"; // Import halaman detail baru
 
 function App() {
   const [notes, setNotes] = useState(getInitialData());
@@ -44,6 +46,26 @@ function App() {
             }
           />
           <Route path="/add" element={<AddPage onAddNote={addNote} />} />
+          <Route
+            path="/archives"
+            element={
+              <ArchivePage
+                notes={notes}
+                onDelete={deleteNote}
+                onArchive={toggleArchive}
+              />
+            }
+          />
+          <Route
+            path="/notes/:id"
+            element={
+              <DetailPage
+                notes={notes}
+                onDelete={deleteNote}
+                onArchive={toggleArchive}
+              />
+            }
+          />
         </Routes>
       </main>
     </div>

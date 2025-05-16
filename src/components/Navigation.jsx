@@ -1,31 +1,39 @@
 import React from "react";
-import { Link, useLocation } from "react-router-dom";
+import { NavLink } from "react-router-dom";
 
 const Navigation = () => {
-  const location = useLocation();
-
   return (
     <nav className="nav-container">
       <ul className="nav-list">
         <li>
-          <Link
+          <NavLink
             to="/"
-            className={
-              location.pathname === "/" ? "nav-link active" : "nav-link"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
             }
           >
             Beranda
-          </Link>
+          </NavLink>
         </li>
         <li>
-          <Link
+          <NavLink
             to="/add"
-            className={
-              location.pathname === "/add" ? "nav-link active" : "nav-link"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
             }
           >
-            Detail Catatan
-          </Link>
+            Tambah Catatan
+          </NavLink>
+        </li>
+        <li>
+          <NavLink
+            to="/archives"
+            className={({ isActive }) =>
+              isActive ? "nav-link active" : "nav-link"
+            }
+          >
+            Arsip
+          </NavLink>
         </li>
       </ul>
     </nav>

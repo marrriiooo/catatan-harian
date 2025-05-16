@@ -2,9 +2,12 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-// ...
+// ... ini adaa lah bagian yang menguru untuk menambahkan catatan baru.jadi bagian ini terdiri dari bebebrapa item seperti (form) ,(texxt area) , (button tambah)
 
+// jadi ini variable yang dibuat untuk menampilkan sisa karakter
 const MAX_TITLE_LENGTH = 50;
+
+// ini bagian fungsi untuk menambahkan data ke index.js
 
 function NoteForm({ onAddNote }) {
   const [title, setTitle] = useState("");

@@ -9,11 +9,11 @@ function HomePage({ notes, onDelete, onArchive, onAddNote }) {
   const [searchParams, setSearchParams] = useSearchParams();
   const keyword = searchParams.get("keyword") || "";
 
-  const filteredNotes = notes.filter((note) =>
-    note.title.toLowerCase().includes(keyword.toLowerCase())
+  // Filter notes berdasarkan keyword dan hanya yang tidak diarsipkan
+  const activeNotes = notes.filter(
+    (note) =>
+      !note.archived && note.title.toLowerCase().includes(keyword.toLowerCase())
   );
-  const activeNotes = filteredNotes.filter((note) => !note.archived);
-  const archivedNotes = filteredNotes.filter((note) => note.archived);
 
   return (
     <>
@@ -28,14 +28,15 @@ function HomePage({ notes, onDelete, onArchive, onAddNote }) {
       </div>
 
       <h2>Catatan Aktif</h2>
-      <NoteList notes={activeNotes} onDelete={onDelete} onArchive={onArchive} />
-
-      <h2>Catatan Arsip</h2>
-      <NoteList
-        notes={archivedNotes}
-        onDelete={onDelete}
-        onArchive={onArchive}
-      />
+      {activeNotes.length > 0 ? (
+        <NoteList
+          notes={activeNotes}
+          onDelete={onDelete}
+          onArchive={onArchive}
+        />
+      ) : (
+        <p className="notes-list__empty-message">Tidak ada catatan aktif</p>
+      )}
     </>
   );
 }

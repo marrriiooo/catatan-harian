@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import { showFormattedDate } from "../utils";
 import PropTypes from "prop-types";
 
@@ -12,14 +13,19 @@ function NoteItem({
 }) {
   return (
     <div className="note-item">
-      <h3>{title}</h3>
-      <p>{body}</p>
-      <small style={{ color: "purple", fontWeight: "bold" }}>
-        {showFormattedDate(createdAt)}
-      </small>
-      <div style={{ marginTop: "10px" }}>
-        <button onClick={() => onDelete(id)}>Hapus</button>
-        <button className="archive-btn" onClick={() => onArchive(id)}>
+      <Link to={`/notes/${id}`} className="note-item__title">
+        <h3>{title}</h3>
+      </Link>
+      <p className="note-item__body">{body}</p>
+      <small className="note-item__date">{showFormattedDate(createdAt)}</small>
+      <div className="note-item__actions">
+        <button onClick={() => onDelete(id)} className="note-item__delete-btn">
+          Hapus
+        </button>
+        <button
+          onClick={() => onArchive(id)}
+          className="note-item__archive-btn"
+        >
           {archived ? "Pindahkan" : "Arsipkan"}
         </button>
       </div>
@@ -28,7 +34,7 @@ function NoteItem({
 }
 
 NoteItem.propTypes = {
-  id: PropTypes.number.isRequired,
+  id: PropTypes.oneOfType([PropTypes.number, PropTypes.string]).isRequired,
   title: PropTypes.string.isRequired,
   body: PropTypes.string.isRequired,
   createdAt: PropTypes.string.isRequired,

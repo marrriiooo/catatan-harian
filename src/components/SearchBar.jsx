@@ -1,6 +1,8 @@
 import React from "react";
 import PropTypes from "prop-types";
 
+// jadi ini bagian dimana  kita bisa mencari data dengan memasukan nama judul di kolom pencarian
+
 function SearchBar({ keyword, onSearch }) {
   return (
     <div className="search-bar">
