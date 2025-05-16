@@ -2,10 +2,11 @@ import React from "react";
 import PropTypes from "prop-types";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function ArchivePage({ notes, onDelete, onArchive }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate(); // Tambahkan ini
   const keyword = searchParams.get("keyword") || "";
 
   const filteredNotes = notes.filter(
@@ -24,7 +25,10 @@ function ArchivePage({ notes, onDelete, onArchive }) {
       <NoteList
         notes={filteredNotes}
         onDelete={onDelete}
-        onArchive={onArchive}
+        onArchive={(id) => {
+          onArchive(id);
+          navigate("/");
+        }}
       />
     </>
   );

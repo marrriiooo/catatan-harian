@@ -3,10 +3,11 @@ import PropTypes from "prop-types";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
 import NoteForm from "../components/NoteForm";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 
 function HomePage({ notes, onDelete, onArchive, onAddNote }) {
   const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
   const keyword = searchParams.get("keyword") || "";
 
   // Filter notes berdasarkan keyword dan hanya yang tidak diarsipkan
@@ -32,7 +33,10 @@ function HomePage({ notes, onDelete, onArchive, onAddNote }) {
         <NoteList
           notes={activeNotes}
           onDelete={onDelete}
-          onArchive={onArchive}
+          onArchive={(id) => {
+            onArchive(id);
+            navigate("/archives"); // Arahkan ke halaman arsip
+          }}
         />
       ) : (
         <p className="notes-list__empty-message">Tidak ada catatan aktif</p>

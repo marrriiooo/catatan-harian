@@ -15,16 +15,7 @@ const Navigation = () => {
             Beranda
           </NavLink>
         </li>
-        <li>
-          <NavLink
-            to="/add"
-            className={({ isActive }) =>
-              isActive ? "nav-link active" : "nav-link"
-            }
-          >
-            Tambah Catatan
-          </NavLink>
-        </li>
+
         <li>
           <NavLink
             to="/archives"
