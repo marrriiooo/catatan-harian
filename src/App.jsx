@@ -3,7 +3,6 @@ import { Routes, Route } from "react-router-dom";
 import { getInitialData } from "./utils";
 import Navigation from "./components/Navigation";
 import HomePage from "./pages/HomePage";
-import AddPage from "./pages/AddPage";
 import ArchivePage from "./pages/ArchivePage";
 import DetailPage from "./pages/DetailPage"; // Import halaman detail baru
 
@@ -45,7 +44,7 @@ function App() {
               />
             }
           />
-          <Route path="/add" element={<AddPage onAddNote={addNote} />} />
+
           <Route
             path="/archives"
             element={
