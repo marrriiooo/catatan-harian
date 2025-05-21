@@ -1,0 +1,209 @@
+body {
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-image: url(./images/bg.jpg);
+  background-size: cover;
+  background-position: center;
+  margin: 0;
+  padding: 20px;
+}
+
+.app-container {
+  max-width: 800px;
+  margin: 0 auto;
+}
+
+h1,
+h2,
+.nav-link {
+  color: white;
+  font-family: "pacifio", cursive;
+}
+
+.note-form,
+.search-bar,
+.note-list {
+  margin-bottom: 20px;
+}
+
+.note-form input,
+.note-form textarea,
+.search-bar input {
+  width: 100%;
+  padding: 10px;
+  margin-top: 5px;
+  box-sizing: border-box;
+  font-size: 1rem;
+}
+
+.note-form textarea {
+  height: 100px;
+  resize: vertical;
+}
+
+.note-form button {
+  padding: 10px 20px;
+  margin-top: 10px;
+  background-color: greenyellow;
+  color: black;
+  border: none;
+  cursor: pointer;
+  border-radius: 4px;
+  border: 3px solid;
+  transition: 0.3s;
+}
+
+.note-form button:hover {
+  background-color: green;
+}
+
+.note-item {
+  background-color: white;
+  padding: 15px;
+  margin-bottom: 10px;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 3px solid;
+}
+
+.note-item h3 {
+  margin-top: 0;
+}
+
+.note-item button {
+  margin-right: 10px;
+  background-color: #e74c3c;
+  border: none;
+  color: white;
+  padding: 6px 12px;
+  cursor: pointer;
+  border-radius: 4px;
+}
+
+.note-item button.archive-btn {
+  background-color: #2ecc71;
+}
+
+.note-item button:hover {
+  opacity: 0.8;
+}
+
+/* navigasi  */
+.nav-container {
+  padding: 10px 20px;
+  margin-top: 10px;
+}
+
+.nav-list {
+  display: flex;
+  justify-content: flex-end;
+  gap: 20px;
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+
+.nav-link {
+  text-decoration: none;
+  color: #333;
+  font-weight: bold;
+  transition: color 0.2s;
+  padding: 6px 12px;
+  border-radius: 6px;
+}
+
+.nav-link:hover {
+  background-color: #e2e8f0;
+}
+
+/* detailpage */
+/* Detail Page Styles */
+.detail-page {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background: white;
+  border-radius: 8px;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  border: 3px solid;
+}
+
+.back-button {
+  background: none;
+  border: none;
+  color: black;
+  cursor: pointer;
+  font-size: 1rem;
+  margin-bottom: 1rem;
+  font-weight: bold;
+}
+
+.back-button:hover {
+  text-decoration: underline;
+}
+
+.detail-page__title {
+  color: #2c3e50;
+  margin-bottom: 0.5rem;
+}
+
+.detail-page__date {
+  color: purple;
+  font-size: 0.9rem;
+  margin-bottom: 1.5rem;
+}
+
+.detail-page__body {
+  line-height: 1.6;
+  margin-bottom: 2rem;
+  white-space: pre-line;
+}
+
+.detail-page__actions {
+  display: flex;
+  gap: 1rem;
+}
+
+.action-button {
+  padding: 0.5rem 1rem;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+
+.action-button.archive {
+  background-color: #2ecc71;
+  color: white;
+}
+
+.action-button.delete {
+  background-color: #e74c3c;
+  color: white;
+}
+
+.action-button:hover {
+  opacity: 0.9;
+}
+
+.detail-not-found {
+  text-align: center;
+  padding: 2rem;
+}
+
+.detail-not-found button {
+  padding: 0.5rem 1rem;
+  background-color: greenyellow;
+  color: black;
+  border: 3px solid black; /* Border tebal 3px warna hitam */
+  border-radius: 4px;
+  cursor: pointer;
+  margin-top: 1rem;
+  font-weight: bold; /* Teks lebih tebal */
+  transition: all 0.3s ease; /* Efek transisi halus */
+}
+
+.detail-not-found button:hover {
+  background-color: #7cfc00; /* Warna lebih terang saat hover */
+  transform: scale(1.05); /* Sedikit membesar saat hover */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Bayangan saat hover */
+}
