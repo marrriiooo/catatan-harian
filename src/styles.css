@@ -207,3 +207,41 @@ h2,
   transform: scale(1.05); /* Sedikit membesar saat hover */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Bayangan saat hover */
 }
+/* login page  */
+.login-page h2,
+.register-page h2 {
+  font-weight: normal;
+}
+
+.login-input,
+.register-input,
+.contact-input {
+  margin-top: 16px;
+}
+
+.login-input input,
+.register-input input,
+.contact-input input {
+  display: block;
+  padding: 16px;
+  width: 93%;
+  margin: 8px 0;
+  font-size: 24px;
+  background-color: white;
+  border: 3px solidblack;
+  border-radius: 8px;
+}
+
+.login-input button,
+.register-input button,
+.contact-input button {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  font-size: 24px;
+  color: greenyellow;
+  background-color: purple;
+  border: 2px solid black;
+  border-radius: 8px;
+  margin: 16px 0;
+}

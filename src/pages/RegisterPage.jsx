@@ -1,39 +1,27 @@
-// src/components/RegisterInput.jsx (baru)
 import React from "react";
+import { Link, useNavigate } from "react-router-dom";
+import RegisterInput from "../components/RegisterInput";
+import { register } from "../utils/api";
 
-function RegisterInput({ register }) {
-  const [name, setName] = React.useState("");
-  const [email, setEmail] = React.useState("");
-  const [password, setPassword] = React.useState("");
+function RegisterPage() {
+  const navigate = useNavigate();
 
-  const onSubmitHandler = (e) => {
-    e.preventDefault();
-    register({ name, email, password });
-  };
+  async function onRegisterHandler(user) {
+    const { error } = await register(user);
+    if (!error) {
+      navigate("/");
+    }
+  }
 
   return (
-    <form onSubmit={onSubmitHandler}>
-      <input
-        type="text"
-        placeholder="Nama"
-        value={name}
-        onChange={(e) => setName(e.target.value)}
-      />
-      <input
-        type="email"
-        placeholder="Email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-      />
-      <input
-        type="password"
-        placeholder="Password"
-        value={password}
-        onChange={(e) => setPassword(e.target.value)}
-      />
-      <button type="submit">Daftar</button>
-    </form>
+    <section className="register-page">
+      <h2>Gak perlu serius-serius ya isinya ...</h2>
+      <RegisterInput register={onRegisterHandler} />
+      <p>
+        Kembali ke <Link to="/">Masuk</Link>
+      </p>
+    </section>
   );
 }
 
-export default RegisterInput;
+export default RegisterPage;

@@ -1,4 +1,3 @@
-// src/utils/api.js
 const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
 async function fetchWithToken(url, options = {}) {
@@ -28,6 +27,42 @@ export async function register({ name, email, password }) {
   }
 
   return responseJson;
+}
+
+// Add this to your existing api.js file
+export async function getUserLogged() {
+  const token = localStorage.getItem("accessToken");
+
+  // Validasi dasar token
+  if (!token || typeof token !== "string" || token.split(".").length !== 3) {
+    localStorage.removeItem("accessToken"); // Bersihkan token invalid
+    throw new Error("Invalid or missing token");
+  }
+
+  try {
+    const response = await fetch(`${API_BASE_URL}/users/me`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+        "Content-Type": "application/json",
+      },
+    });
+
+    const responseJson = await response.json();
+
+    if (!response.ok || responseJson.status !== "success") {
+      localStorage.removeItem("accessToken"); // Bersihkan jika gagal
+      throw new Error(responseJson.message || "Failed to fetch user data");
+    }
+
+    return responseJson;
+  } catch (error) {
+    localStorage.removeItem("accessToken"); // Bersihkan jika error
+    throw new Error(`Authentication failed: ${error.message}`);
+  }
+}
+
+export function putAccessToken(token) {
+  localStorage.setItem("accessToken", token);
 }
 
 export async function login({ email, password }) {
@@ -80,7 +115,7 @@ export async function getNote(id) {
   return responseJson.data.note;
 }
 
-export async function createNote({ title, body }) {
+export async function addNote({ title, body }) {
   const response = await fetchWithToken(`${API_BASE_URL}/notes`, {
     method: "POST",
     body: JSON.stringify({ title, body }),

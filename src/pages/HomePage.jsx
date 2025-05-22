@@ -1,81 +1,72 @@
-// src/pages/HomePage.jsx
-import React from "react";
-import { useSearchParams } from "react-router-dom";
+import React, { useEffect, useState } from "react";
+import PropTypes from "prop-types";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
-import { getActiveNotes, getArchivedNotes, deleteNote } from "../utils/api";
+import NoteForm from "../components/NoteForm";
+import { useNavigate, useSearchParams } from "react-router-dom";
+import { getActiveNotes, addNote, archiveNote, deleteNote } from "../utils/api";
 
-function HomePageWrapper() {
+function HomePage() {
+  const [notes, setNotes] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const keyword = searchParams.get("keyword");
+  const keyword = searchParams.get("keyword") || "";
+  const navigate = useNavigate();
 
-  function changeSearchParams(keyword) {
-    setSearchParams({ keyword });
-  }
+  // Ambil catatan dari API saat komponen dimuat
+  useEffect(() => {
+    getActiveNotes().then(({ data }) => {
+      setNotes(data);
+    });
+  }, []);
+
+  const handleAddNote = async (note) => {
+    await addNote(note);
+    const { data } = await getActiveNotes();
+    setNotes(data);
+  };
+
+  const handleArchive = async (id) => {
+    await archiveNote(id);
+    const { data } = await getActiveNotes();
+    setNotes(data);
+    navigate("/archives");
+  };
+
+  const handleDelete = async (id) => {
+    await deleteNote(id);
+    const { data } = await getActiveNotes();
+    setNotes(data);
+  };
+
+  const filteredNotes = notes.filter(
+    (note) =>
+      !note.archived && note.title.toLowerCase().includes(keyword.toLowerCase())
+  );
 
   return (
-    <HomePage defaultKeyword={keyword} keywordChange={changeSearchParams} />
+    <>
+      <SearchBar
+        keyword={keyword}
+        onSearch={(keyword) => setSearchParams({ keyword })}
+      />
+
+      <div className="note-form-container">
+        <h2>Tambah Catatan Baru</h2>
+        <NoteForm onAddNote={handleAddNote} />
+      </div>
+
+      <h2>Catatan Aktif</h2>
+      {filteredNotes.length > 0 ? (
+        <NoteList
+          notes={filteredNotes}
+          onDelete={handleDelete}
+          onArchive={handleArchive}
+        />
+      ) : (
+        <p className="notes-list__empty-message">Tidak ada catatan aktif</p>
+      )}
+    </>
   );
 }
 
-class HomePage extends React.Component {
-  constructor(props) {
-    super(props);
-
-    this.state = {
-      notes: [],
-      keyword: props.defaultKeyword || "",
-    };
-
-    this.onDeleteHandler = this.onDeleteHandler.bind(this);
-    this.onKeywordChangeHandler = this.onKeywordChangeHandler.bind(this);
-  }
-
-  async componentDidMount() {
-    const notes = await getActiveNotes();
-    this.setState({ notes });
-  }
-
-  async onDeleteHandler(id) {
-    await deleteNote(id);
-    const notes = await getActiveNotes();
-    this.setState({ notes });
-  }
-
-  onKeywordChangeHandler(keyword) {
-    this.setState({ keyword });
-    this.props.keywordChange(keyword);
-  }
-
-  // Di dalam HomePage.jsx
-  async onArchiveHandler(id) {
-    await archiveNote(id);
-    const notes = await getActiveNotes();
-    this.setState({ notes });
-  }
-
-  async onUnarchiveHandler(id) {
-    await unarchiveNote(id);
-    const notes = await getArchivedNotes();
-    this.setState({ notes });
-  }
-
-  render() {
-    const filteredNotes = this.state.notes.filter((note) =>
-      note.title.toLowerCase().includes(this.state.keyword.toLowerCase())
-    );
-
-    return (
-      <section>
-        <SearchBar
-          keyword={this.state.keyword}
-          keywordChange={this.onKeywordChangeHandler}
-        />
-        <h2>Daftar Catatan</h2>
-        <NoteList notes={filteredNotes} onDelete={this.onDeleteHandler} />
-      </section>
-    );
-  }
-}
-
-export default HomePageWrapper;
+export default HomePage;
