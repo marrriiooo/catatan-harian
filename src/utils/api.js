@@ -1,4 +1,3 @@
-// src/utils/api.js
 const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
 async function fetchWithToken(url, options = {}) {
@@ -116,7 +115,7 @@ export async function getNote(id) {
   return responseJson.data.note;
 }
 
-export async function createNote({ title, body }) {
+export async function addNote({ title, body }) {
   const response = await fetchWithToken(`${API_BASE_URL}/notes`, {
     method: "POST",
     body: JSON.stringify({ title, body }),

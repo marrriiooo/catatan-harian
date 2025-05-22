@@ -1,17 +1,45 @@
-import React from "react";
+
+import React, { useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
 import NoteForm from "../components/NoteForm";
 import { useNavigate, useSearchParams } from "react-router-dom";
+import { getActiveNotes, addNote, archiveNote, deleteNote } from "../utils/api";
 
-function HomePage({ notes, onDelete, onArchive, onAddNote }) {
+function HomePage() {
+  const [notes, setNotes] = useState([]);
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate();
   const keyword = searchParams.get("keyword") || "";
+  const navigate = useNavigate();
 
-  // Filter notes berdasarkan keyword dan hanya yang tidak diarsipkan
-  const activeNotes = notes.filter(
+  // Ambil catatan dari API saat komponen dimuat
+  useEffect(() => {
+    getActiveNotes().then(({ data }) => {
+      setNotes(data);
+    });
+  }, []);
+
+  const handleAddNote = async (note) => {
+    await addNote(note);
+    const { data } = await getActiveNotes();
+    setNotes(data);
+  };
+
+  const handleArchive = async (id) => {
+    await archiveNote(id);
+    const { data } = await getActiveNotes();
+    setNotes(data);
+    navigate("/archives");
+  };
+
+  const handleDelete = async (id) => {
+    await deleteNote(id);
+    const { data } = await getActiveNotes();
+    setNotes(data);
+  };
+
+  const filteredNotes = notes.filter(
     (note) =>
       !note.archived && note.title.toLowerCase().includes(keyword.toLowerCase())
   );
@@ -25,18 +53,15 @@ function HomePage({ notes, onDelete, onArchive, onAddNote }) {
 
       <div className="note-form-container">
         <h2>Tambah Catatan Baru</h2>
-        <NoteForm onAddNote={onAddNote} />
+        <NoteForm onAddNote={handleAddNote} />
       </div>
 
       <h2>Catatan Aktif</h2>
-      {activeNotes.length > 0 ? (
+      {filteredNotes.length > 0 ? (
         <NoteList
-          notes={activeNotes}
-          onDelete={onDelete}
-          onArchive={(id) => {
-            onArchive(id);
-            navigate("/archives"); // Arahkan ke halaman arsip
-          }}
+          notes={filteredNotes}
+          onDelete={handleDelete}
+          onArchive={handleArchive}
         />
       ) : (
         <p className="notes-list__empty-message">Tidak ada catatan aktif</p>
@@ -45,11 +70,5 @@ function HomePage({ notes, onDelete, onArchive, onAddNote }) {
   );
 }
 
-HomePage.propTypes = {
-  notes: PropTypes.array.isRequired,
-  onAddNote: PropTypes.func.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onArchive: PropTypes.func.isRequired,
-};
-
 export default HomePage;
+

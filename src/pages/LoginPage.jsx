@@ -6,10 +6,11 @@ import { login } from "../utils/api";
 
 function LoginPage({ loginSuccess }) {
   async function onLogin({ email, password }) {
-    const { error, data } = await login({ email, password });
-
-    if (!error) {
-      loginSuccess(data);
+    try {
+      const accessToken = await login({ email, password });
+      loginSuccess({ accessToken });
+    } catch (error) {
+      alert(error.message);
     }
   }
 

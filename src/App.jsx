@@ -1,3 +1,4 @@
+
 import React, { Component } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { getInitialData } from "./utils";
@@ -7,7 +8,7 @@ import ArchivePage from "./pages/ArchivePage";
 import DetailPage from "./pages/DetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
-import { getUserLogged, putAccessToken, login, register } from "./utils/api";
+import { getUserLogged, putAccessToken } from "./utils/api";
 
 class App extends Component {
   constructor(props) {
@@ -15,14 +16,13 @@ class App extends Component {
 
     this.state = {
       notes: getInitialData(),
-      authedUser: null, // null berarti belum login
+      authedUser: null,
+      loading: true,
     };
-    this.onLoginSuccess = this.onLoginSuccess.bind(this);
   }
 
   async componentDidMount() {
     try {
-      // Cek token di localStorage terlebih dahulu
       const token = localStorage.getItem("accessToken");
 
       if (token) {
@@ -36,23 +36,24 @@ class App extends Component {
       }
     } catch (error) {
       console.error("Auth check failed:", error);
+      localStorage.removeItem("accessToken");
       this.setState({
         authedUser: null,
         loading: false,
-        error: "Session expired. Please login again.",
       });
     }
   }
 
-  async onLoginSuccess({ accessToken }) {
+  onLoginSuccess = async ({ accessToken }) => {
     putAccessToken(accessToken);
     const { data } = await getUserLogged();
-    this.setState(() => {
-      return {
-        authedUser: data,
-      };
-    });
-  }
+    this.setState({ authedUser: data });
+  };
+
+  onLogout = () => {
+    localStorage.removeItem("accessToken");
+    this.setState({ authedUser: null });
+  };
 
   addNote = (newNote) => {
     this.setState((prevState) => ({
@@ -74,18 +75,14 @@ class App extends Component {
     }));
   };
 
-  onLoginSuccess = (user) => {
-    this.setState({ authedUser: user });
-  };
-
-  onLogout = () => {
-    this.setState({ authedUser: null });
-  };
-
   render() {
-    const { notes, authedUser } = this.state;
+    const { notes, authedUser, loading } = this.state;
 
-    if (this.state.authedUser === null) {
+    if (loading) {
+      return <p>Loading...</p>;
+    }
+
+    if (authedUser === null) {
       return (
         <div className="app-container">
           <Routes>
@@ -144,6 +141,7 @@ class App extends Component {
       </div>
     );
   }
+
 }
 
 export default App;
