@@ -6,7 +6,7 @@ import { useNavigate, useSearchParams } from "react-router-dom";
 
 function ArchivePage({ notes, onDelete, onArchive }) {
   const [searchParams, setSearchParams] = useSearchParams();
-  const navigate = useNavigate(); // Tambahkan ini
+  const navigate = useNavigate();
   const keyword = searchParams.get("keyword") || "";
 
   const filteredNotes = notes.filter(

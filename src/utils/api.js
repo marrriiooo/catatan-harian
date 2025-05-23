@@ -1,5 +1,9 @@
 const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
+export function putAccessToken(token) {
+  localStorage.setItem("accessToken", token);
+}
+
 async function fetchWithToken(url, options = {}) {
   const token = localStorage.getItem("accessToken");
   return fetch(url, {
@@ -10,6 +14,25 @@ async function fetchWithToken(url, options = {}) {
       "Content-Type": "application/json",
     },
   });
+}
+
+// mendaftar akun start
+
+export async function login({ email, password }) {
+  const response = await fetch(`${API_BASE_URL}/login`, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+    },
+    body: JSON.stringify({ email, password }),
+  });
+
+  const responseJson = await response.json();
+  if (responseJson.status !== "success") {
+    throw new Error(responseJson.message);
+  }
+
+  return responseJson.data.accessToken;
 }
 
 export async function register({ name, email, password }) {
@@ -60,18 +83,16 @@ export async function getUserLogged() {
     throw new Error(`Authentication failed: ${error.message}`);
   }
 }
+// daftar akun atau login end
 
-export function putAccessToken(token) {
-  localStorage.setItem("accessToken", token);
-}
-
-export async function login({ email, password }) {
-  const response = await fetch(`${API_BASE_URL}/login`, {
+// bagian homeage addnote ,delt dan arsi start
+export async function addNote({ title, body }) {
+  const response = await fetchWithToken(`${API_BASE_URL}/notes`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ email, password }),
+    body: JSON.stringify({ title, body }),
   });
 
   const responseJson = await response.json();
@@ -80,12 +101,8 @@ export async function login({ email, password }) {
     throw new Error(responseJson.message);
   }
 
-  const token = responseJson.data.accessToken;
-  localStorage.setItem("accessToken", token);
-
-  return token;
+  return responseJson.data.note;
 }
-
 export async function getActiveNotes() {
   const response = await fetchWithToken(`${API_BASE_URL}/notes`);
   const responseJson = await response.json();
@@ -112,20 +129,6 @@ export async function getNote(id) {
   const response = await fetchWithToken(`${API_BASE_URL}/notes/${id}`);
   const responseJson = await response.json();
 
-  if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
-  }
-
-  return responseJson.data.note;
-}
-
-export async function addNote({ title, body }) {
-  const response = await fetchWithToken(`${API_BASE_URL}/notes`, {
-    method: "POST",
-    body: JSON.stringify({ title, body }),
-  });
-
-  const responseJson = await response.json();
   if (responseJson.status !== "success") {
     throw new Error(responseJson.message);
   }
