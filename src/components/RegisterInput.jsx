@@ -9,71 +9,111 @@ class RegisterInput extends React.Component {
       name: "",
       email: "",
       password: "",
+      confirmPassword: "",
+      errorMessage: "",
     };
 
-    this.onNameChange = this.onNameChange.bind(this);
-    this.onEmailChange = this.onEmailChange.bind(this);
-    this.onPasswordChange = this.onPasswordChange.bind(this);
-    this.onSubmitHandler = this.onSubmitHandler.bind(this);
-  }
+    // Gunakan arrow function untuk menghindari binding
+    this.handleInputChange = (field) => (e) => {
+      this.setState({
+        [field]: e.target.value,
+        errorMessage: "", // Reset error saat input berubah
+      });
+    };
 
-  onNameChange(event) {
-    this.setState(() => {
-      return {
-        name: event.target.value,
-      };
-    });
-  }
+    this.onSubmitHandler = (e) => {
+      e.preventDefault();
+      const { name, email, password, confirmPassword } = this.state;
 
-  onEmailChange(event) {
-    this.setState(() => {
-      return {
-        email: event.target.value,
-      };
-    });
-  }
+      // Validasi input
+      if (password !== confirmPassword) {
+        this.setState({
+          errorMessage: "Password dan konfirmasi password tidak cocok",
+        });
+        return;
+      }
 
-  onPasswordChange(event) {
-    this.setState(() => {
-      return {
-        password: event.target.value,
-      };
-    });
-  }
+      if (password.length < 6) {
+        this.setState({ errorMessage: "Password minimal 6 karakter" });
+        return;
+      }
 
-  onSubmitHandler(event) {
-    event.preventDefault();
-
-    this.props.register({
-      name: this.state.name,
-      email: this.state.email,
-      password: this.state.password,
-    });
+      this.props.register({
+        name,
+        email,
+        password,
+      });
+    };
   }
 
   render() {
+    const { name, email, password, confirmPassword, errorMessage } = this.state;
+
     return (
       <form onSubmit={this.onSubmitHandler} className="register-input">
-        <input
-          type="text"
-          placeholder="Nama"
-          value={this.state.name}
-          onChange={this.onNameChange}
-        />
-        <input
-          type="email"
-          placeholder="Email"
-          value={this.state.email}
-          onChange={this.onEmailChange}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          autoComplete="current-password"
-          value={this.state.password}
-          onChange={this.onPasswordChange}
-        />
-        <button>Register</button>
+        {errorMessage && (
+          <div role="alert" aria-live="polite" className="error-message">
+            {errorMessage}
+          </div>
+        )}
+
+        <div className="form-group">
+          <label htmlFor="name">Nama</label>
+          <input
+            id="name"
+            type="text"
+            placeholder="Nama"
+            value={name}
+            onChange={this.handleInputChange("name")}
+            autoComplete="name"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="email">Email</label>
+          <input
+            id="email"
+            type="email"
+            placeholder="Email"
+            value={email}
+            onChange={this.handleInputChange("email")}
+            autoComplete="email"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="password">Password</label>
+          <input
+            id="password"
+            type="password"
+            placeholder="Password"
+            value={password}
+            onChange={this.handleInputChange("password")}
+            autoComplete="new-password"
+            minLength="6"
+            required
+          />
+        </div>
+
+        <div className="form-group">
+          <label htmlFor="confirmPassword">Konfirmasi Password</label>
+          <input
+            id="confirmPassword"
+            type="password"
+            placeholder="Konfirmasi Password"
+            value={confirmPassword}
+            onChange={this.handleInputChange("confirmPassword")}
+            autoComplete="new-password"
+            minLength="6"
+            required
+          />
+        </div>
+
+        <button type="submit" className="submit-button">
+          Daftar
+        </button>
       </form>
     );
   }
