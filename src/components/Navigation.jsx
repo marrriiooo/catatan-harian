@@ -1,7 +1,7 @@
 import React from "react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
-import { useTheme } from "../contexts/ThemeContext"; // Pastikan path sesuai
+import { useTheme } from "../contexts/ThemeContext";
 
 const Navigation = ({ name, onLogout }) => {
   const { theme, toggleTheme } = useTheme();
