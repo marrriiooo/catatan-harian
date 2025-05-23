@@ -1,4 +1,10 @@
+<<<<<<< HEAD
 import React, { useState } from "react";
+=======
+
+import React, { useState } from "react";
+
+>>>>>>> 958088b7bfd1e0cecb92d485b26ed9d91c99b24b
 import { Link, useNavigate } from "react-router-dom";
 import RegisterInput from "../components/RegisterInput";
 import { register } from "../utils/api";
