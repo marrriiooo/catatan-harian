@@ -16,6 +16,7 @@ export function ThemeProvider({ children }) {
     const newTheme = theme === "light" ? "dark" : "light";
     setTheme(newTheme);
     localStorage.setItem("theme", newTheme);
+    document.documentElement.setAttribute("data-theme", newTheme); // Tambahkan baris ini
   };
 
   return (

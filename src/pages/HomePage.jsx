@@ -82,7 +82,7 @@ function HomePage() {
           onArchive={archiveNote}
         />
       ) : (
-        <p className="notes-list__empty-message">
+        <p style={{ color: `var(--text-color)` }}>
           {keyword
             ? "Tidak ditemukan hasil pencarian"
             : "Tidak ada catatan aktif"}

@@ -49,17 +49,7 @@ const Navigation = ({ name, onLogout }) => {
 
         {/* Tambahkan tombol toggle tema */}
         <li>
-          <button
-            onClick={toggleTheme}
-            className="theme-toggle"
-            style={{
-              background: "none",
-              border: "none",
-              cursor: "pointer",
-              fontSize: "1.2rem",
-              color: `var(--text-color)`,
-            }}
-          >
+          <button onClick={toggleTheme} className="theme-toggle">
             {theme === "light" ? "🌙" : "☀️"}
           </button>
         </li>
