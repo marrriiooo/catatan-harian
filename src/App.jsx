@@ -99,7 +99,7 @@ class App extends Component {
       <div className="app-container">
         <header>
           <h1>Catatan Pribadi</h1>
-          <Navigation onLogout={this.onLogout} />
+          <Navigation name={authedUser.name} onLogout={this.onLogout} />
         </header>
         <main>
           <Routes>

@@ -40,6 +40,7 @@ class DetailPage extends React.Component {
     return (
       <section>
         <h2>{this.state.note.title}</h2>
+        <p>{new Date(this.state.note.createdAt).toLocaleString()}</p>
         <p>{this.state.note.body}</p>
       </section>
     );
