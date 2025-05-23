@@ -1,4 +1,3 @@
-
 import React from "react";
 import PropTypes from "prop-types";
 
@@ -83,6 +82,5 @@ class RegisterInput extends React.Component {
 RegisterInput.propTypes = {
   register: PropTypes.func.isRequired,
 };
-
 
 export default RegisterInput;
