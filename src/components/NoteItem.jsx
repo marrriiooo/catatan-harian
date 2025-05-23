@@ -1,5 +1,4 @@
 import { Link } from "react-router-dom";
-import { showFormattedDate } from "../utils";
 import PropTypes from "prop-types";
 import { deleteNote, archiveNote, unarchiveNote } from "../utils/api";
 
@@ -7,7 +6,7 @@ function NoteItem({ id, title, body, createdAt, archived, refreshNotes }) {
   const handleDelete = async () => {
     try {
       await deleteNote(id);
-      refreshNotes(); // panggil ulang catatan setelah dihapus
+      refreshNotes();
     } catch (error) {
       alert(error.message);
     }
@@ -15,16 +14,21 @@ function NoteItem({ id, title, body, createdAt, archived, refreshNotes }) {
 
   const handleToggleArchive = async () => {
     try {
-      if (archived) {
-        await unarchiveNote(id);
-      } else {
-        await archiveNote(id);
-      }
-      refreshNotes(); // panggil ulang catatan setelah diubah
+      archived ? await unarchiveNote(id) : await archiveNote(id);
+      refreshNotes();
     } catch (error) {
       alert(error.message);
     }
   };
+
+  // Format tanggal langsung di komponen
+  const formattedDate = new Date(createdAt).toLocaleDateString("id-ID", {
+    day: "numeric",
+    month: "numeric",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit",
+  });
 
   return (
     <div className="note-item">
@@ -32,14 +36,19 @@ function NoteItem({ id, title, body, createdAt, archived, refreshNotes }) {
         <h3>{title}</h3>
       </Link>
       <p className="note-item__body">{body}</p>
-      <small className="note-item__date">{showFormattedDate(createdAt)}</small>
+      <small className="note-item__date">{formattedDate}</small>
       <div className="note-item__actions">
-        <button onClick={handleDelete} className="note-item__delete-btn">
+        <button
+          onClick={handleDelete}
+          className="note-item__delete-btn"
+          aria-label="Hapus catatan"
+        >
           Hapus
         </button>
         <button
           onClick={handleToggleArchive}
           className="note-item__archive-btn"
+          aria-label={archived ? "Pindahkan dari arsip" : "Arsipkan catatan"}
         >
           {archived ? "Pindahkan" : "Arsipkan"}
         </button>

@@ -13,26 +13,23 @@ function HomePage() {
     const searchParams = new URLSearchParams(location.search);
     return searchParams.get("keyword") || "";
   });
+  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    fetchNotes();
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        const result = await getActiveNotes();
+        setNotes(result || []);
+      } catch (err) {
+        console.error("Gagal memuat catatan:", err);
+        alert("Gagal memuat catatan");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    fetchData();
   }, []);
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    const newKeyword = searchParams.get("keyword") || "";
-    setKeyword(newKeyword);
-  }, [location.search]);
-
-  const fetchNotes = async () => {
-    try {
-      const result = await getActiveNotes();
-      setNotes(result || []);
-    } catch (err) {
-      console.error("Gagal memuat catatan:", err);
-      setNotes([]);
-    }
-  };
 
   const handleSearch = (keyword) => {
     navigate(`?keyword=${keyword}`);
@@ -40,30 +37,21 @@ function HomePage() {
   };
 
   const handleAddNote = async (note) => {
+    setIsLoading(true);
     try {
-      await addNote(note);
-      await fetchNotes();
+      const { data: newNote } = await addNote(note); // Asumsi response API mengembalikan data note baru
+
+      // Optimistic update
+      setNotes((prevNotes) => [newNote, ...prevNotes]);
+
+      // Reset pencarian
+      setKeyword("");
+      navigate(location.pathname, { replace: true });
     } catch (err) {
       console.error("Gagal menambahkan catatan:", err);
-    }
-  };
-
-  const handleArchive = async (id) => {
-    try {
-      await archiveNote(id);
-      await fetchNotes();
-      navigate("/archives");
-    } catch (err) {
-      console.error("Gagal mengarsipkan catatan:", err);
-    }
-  };
-
-  const handleDelete = async (id) => {
-    try {
-      await deleteNote(id);
-      await fetchNotes();
-    } catch (err) {
-      console.error("Gagal menghapus catatan:", err);
+      alert("Gagal menambahkan catatan");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -76,25 +64,31 @@ function HomePage() {
   }, [notes, keyword]);
 
   return (
-    <>
+    <div className="home-page-container">
       <SearchBar keyword={keyword} onSearch={handleSearch} />
 
       <div className="note-form-container">
         <h2>Tambah Catatan Baru</h2>
-        <NoteForm onAddNote={handleAddNote} />
+        <NoteForm onAddNote={handleAddNote} isLoading={isLoading} />
       </div>
 
       <h2>Catatan Aktif</h2>
-      {filteredNotes.length > 0 ? (
+      {isLoading ? (
+        <p>Memuat data...</p>
+      ) : filteredNotes.length > 0 ? (
         <NoteList
           notes={filteredNotes}
-          onDelete={handleDelete}
-          onArchive={handleArchive}
+          onDelete={deleteNote}
+          onArchive={archiveNote}
         />
       ) : (
-        <p className="notes-list__empty-message">Tidak ada catatan aktif</p>
+        <p className="notes-list__empty-message">
+          {keyword
+            ? "Tidak ditemukan hasil pencarian"
+            : "Tidak ada catatan aktif"}
+        </p>
       )}
-    </>
+    </div>
   );
 }
 
