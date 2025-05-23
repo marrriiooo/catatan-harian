@@ -27,14 +27,12 @@ const Navigation = ({ name, onLogout }) => {
             Arsip
           </NavLink>
         </li>
-      </ul>
-
-      <div className="nav-right">
-        <span className="username">Halo, {name}</span>
         <button onClick={onLogout} className="logout-button">
           Logout
         </button>
-      </div>
+      </ul>
+
+      <span className="username">Halo ini catatan {name}</span>
     </nav>
   );
 };

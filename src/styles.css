@@ -245,3 +245,33 @@ h2,
   border-radius: 8px;
   margin: 16px 0;
 }
+
+/* logout  */
+.logout-button {
+  font-weight: bold;
+  color: greenyellow;
+  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+  background-color: purple;
+  padding: 5px;
+  border-radius: 3px;
+  transition: all 0.3s ease; /* Animasi perubahan */
+}
+
+/* Efek saat hover */
+.logout-button:hover {
+  background-color: darkviolet; /* Warna lebih gelap */
+  color: white;
+  cursor: pointer; /* Ubah kursor jadi tangan */
+  transform: scale(1.05); /* Sedikit membesar */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Bayangan */
+}
+
+/*  */
+/* Cara 1: Langsung target class username */
+
+/* Cara 2: Jika memang ingin spesifik span dengan class username */
+span.username,
+.notes-list__empty-message {
+  color: black;
+  font-family: "Pacifico", cursive;
+}

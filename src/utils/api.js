@@ -75,11 +75,15 @@ export async function login({ email, password }) {
   });
 
   const responseJson = await response.json();
+
   if (responseJson.status !== "success") {
     throw new Error(responseJson.message);
   }
 
-  return responseJson.data.accessToken;
+  const token = responseJson.data.accessToken;
+  localStorage.setItem("accessToken", token);
+
+  return token;
 }
 
 export async function getActiveNotes() {
