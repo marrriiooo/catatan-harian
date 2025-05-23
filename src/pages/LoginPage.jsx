@@ -1,4 +1,5 @@
 import React from "react";
+
 import { useNavigate, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { login } from "../utils/api";
@@ -21,15 +22,12 @@ function LoginPage({ loginSuccess }) {
     <div className="login-page">
       <h2>Silakan masuk untuk melanjutkan...</h2>
       <LoginForm login={onLoginHandler} />
+
       <p>
         Belum punya akun? <Link to="/register">Daftar</Link>
       </p>
     </div>
   );
 }
-
-LoginPage.propTypes = {
-  loginSuccess: PropTypes.func.isRequired,
-};
 
 export default LoginPage;
