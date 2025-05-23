@@ -1,4 +1,3 @@
-
 import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import RegisterInput from "../components/RegisterInput";
@@ -19,11 +18,10 @@ function RegisterPage() {
       <h2>Gak perlu serius-serius ya isinya ...</h2>
       <RegisterInput register={onRegisterHandler} />
       <p>
-        Kembali ke <Link to="/">Masuk</Link>
+        Kembali ke <Link to="/">Login</Link>
       </p>
     </section>
   );
 }
 
 export default RegisterPage;
-

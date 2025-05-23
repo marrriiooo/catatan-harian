@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { getInitialData } from "./utils";
 import Navigation from "./components/Navigation";
 import HomePage from "./pages/HomePage";
 import ArchivePage from "./pages/ArchivePage";
@@ -14,7 +13,6 @@ class App extends Component {
     super(props);
 
     this.state = {
-      notes: getInitialData(),
       authedUser: null,
       loading: true,
     };
@@ -54,28 +52,8 @@ class App extends Component {
     this.setState({ authedUser: null });
   };
 
-  addNote = (newNote) => {
-    this.setState((prevState) => ({
-      notes: [newNote, ...prevState.notes],
-    }));
-  };
-
-  deleteNote = (id) => {
-    this.setState((prevState) => ({
-      notes: prevState.notes.filter((note) => note.id !== id),
-    }));
-  };
-
-  toggleArchive = (id) => {
-    this.setState((prevState) => ({
-      notes: prevState.notes.map((note) =>
-        note.id === id ? { ...note, archived: !note.archived } : note
-      ),
-    }));
-  };
-
   render() {
-    const { notes, authedUser, loading } = this.state;
+    const { authedUser, loading } = this.state;
 
     if (loading) {
       return <p>Loading...</p>;
@@ -103,37 +81,9 @@ class App extends Component {
         </header>
         <main>
           <Routes>
-            <Route
-              path="/"
-              element={
-                <HomePage
-                  notes={notes}
-                  onAddNote={this.addNote}
-                  onDelete={this.deleteNote}
-                  onArchive={this.toggleArchive}
-                />
-              }
-            />
-            <Route
-              path="/archives"
-              element={
-                <ArchivePage
-                  notes={notes}
-                  onDelete={this.deleteNote}
-                  onArchive={this.toggleArchive}
-                />
-              }
-            />
-            <Route
-              path="/notes/:id"
-              element={
-                <DetailPage
-                  notes={notes}
-                  onDelete={this.deleteNote}
-                  onArchive={this.toggleArchive}
-                />
-              }
-            />
+            <Route path="/" element={<HomePage />} />
+            <Route path="/archives" element={<ArchivePage />} />
+            <Route path="/notes/:id" element={<DetailPage />} />
             <Route path="*" element={<Navigate to="/" replace />} />
           </Routes>
         </main>
