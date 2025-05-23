@@ -1,9 +1,8 @@
 import React, { useEffect, useState } from "react";
-import PropTypes from "prop-types";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
 import NoteForm from "../components/NoteForm";
-import { useNavigate, useSearchParams } from "react-router-dom";
 import { getActiveNotes, addNote, archiveNote, deleteNote } from "../utils/api";
 
 function HomePage() {
@@ -12,33 +11,53 @@ function HomePage() {
   const keyword = searchParams.get("keyword") || "";
   const navigate = useNavigate();
 
-  // Ambil catatan dari API saat komponen dimuat
+  // Ambil catatan saat pertama kali load
   useEffect(() => {
-    getActiveNotes().then(({ data }) => {
-      setNotes(data);
-    });
+    const fetchNotes = async () => {
+      try {
+        const result = await getActiveNotes();
+        setNotes(result?.data || []);
+      } catch (err) {
+        console.error("Gagal memuat catatan:", err);
+        setNotes([]);
+      }
+    };
+
+    fetchNotes();
   }, []);
 
   const handleAddNote = async (note) => {
-    await addNote(note);
-    const { data } = await getActiveNotes();
-    setNotes(data);
+    try {
+      await addNote(note);
+      const result = await getActiveNotes();
+      setNotes(result?.data || []);
+    } catch (err) {
+      console.error("Gagal menambahkan catatan:", err);
+    }
   };
 
   const handleArchive = async (id) => {
-    await archiveNote(id);
-    const { data } = await getActiveNotes();
-    setNotes(data);
-    navigate("/archives");
+    try {
+      await archiveNote(id);
+      const result = await getActiveNotes();
+      setNotes(result?.data || []);
+      navigate("/archives");
+    } catch (err) {
+      console.error("Gagal mengarsipkan catatan:", err);
+    }
   };
 
   const handleDelete = async (id) => {
-    await deleteNote(id);
-    const { data } = await getActiveNotes();
-    setNotes(data);
+    try {
+      await deleteNote(id);
+      const result = await getActiveNotes();
+      setNotes(result?.data || []);
+    } catch (err) {
+      console.error("Gagal menghapus catatan:", err);
+    }
   };
 
-  const filteredNotes = notes.filter(
+  const filteredNotes = (notes || []).filter(
     (note) =>
       !note.archived && note.title.toLowerCase().includes(keyword.toLowerCase())
   );
