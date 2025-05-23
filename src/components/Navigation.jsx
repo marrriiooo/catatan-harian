@@ -4,11 +4,12 @@ import { NavLink } from "react-router-dom";
 
 const Navigation = ({ name, onLogout }) => {
   return (
-    <nav className="nav-container">
+    <nav className="nav-container" aria-label="Main navigation">
       <ul className="nav-list">
         <li>
           <NavLink
             to="/"
+            end
             className={({ isActive }) =>
               isActive ? "nav-link active" : "nav-link"
             }
@@ -27,12 +28,21 @@ const Navigation = ({ name, onLogout }) => {
             Arsip
           </NavLink>
         </li>
-        <button onClick={onLogout} className="logout-button">
-          Logout
-        </button>
+
+        {/* Tambahkan li untuk wrapping button */}
+        <li>
+          <button
+            type="button"
+            onClick={onLogout}
+            className="logout-button"
+            aria-label="Logout"
+          >
+            Logout
+          </button>
+        </li>
       </ul>
 
-      <span className="username">Halo ini catatan {name}</span>
+      <span className="nav-username">Halo, ini catatan {name}</span>
     </nav>
   );
 };
