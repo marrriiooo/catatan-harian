@@ -2,12 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import PropTypes from "prop-types";
 
-// ... ini adaa lah bagian yang menguru untuk menambahkan catatan baru.jadi bagian ini terdiri dari bebebrapa item seperti (form) ,(texxt area) , (button tambah)
-
-// jadi ini variable yang dibuat untuk menampilkan sisa karakter
 const MAX_TITLE_LENGTH = 50;
-
-// ini bagian fungsi untuk menambahkan data ke index.js
 
 function NoteForm({ onAddNote }) {
   const [title, setTitle] = useState("");
@@ -17,15 +12,13 @@ function NoteForm({ onAddNote }) {
   const handleSubmit = (e) => {
     e.preventDefault();
     if (!title.trim() || !body.trim()) return;
+
     const newNote = {
-      id: +new Date(),
       title: title.trim(),
       body: body.trim(),
-      archived: false,
-      createdAt: new Date().toISOString(),
     };
 
-    onAddNote(newNote);
+    onAddNote(newNote); // Kirim tanpa id, archived, createdAt
     setTitle("");
     setBody("");
     navigate("/");
@@ -62,4 +55,5 @@ function NoteForm({ onAddNote }) {
 NoteForm.propTypes = {
   onAddNote: PropTypes.func.isRequired,
 };
+
 export default NoteForm;

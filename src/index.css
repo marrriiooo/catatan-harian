@@ -1,9 +1,63 @@
+/* Dark theme variables */
+:root[data-theme="dark"] {
+  --bg-color: #2b2b2b;
+  --text-color: #f5f5f5;
+  --primary-color: #0d6efd;
+}
+
+/* ================= THEME VARIABLES ================= */
+:root {
+  /* Light Theme */
+  --note-form-bg-light: purple;
+  --note-form-text-light: #ffffff;
+
+  /* Dark Theme */
+  --note-form-bg-dark: white;
+  --note-form-text-dark: #000000;
+
+  /* Common */
+  --transition: all 0.3s ease;
+}
+
+[data-theme="light"] {
+  --note-form-bg: var(--note-form-bg-light);
+  --note-form-text: var(--note-form-text-light);
+}
+
+[data-theme="dark"] {
+  --note-form-bg: var(--note-form-bg-dark);
+  --note-form-text: var(--note-form-text-dark);
+}
+
+/* ================= NOTE FORM STYLES ================= */
+.note-form {
+  background-color: var(--note-form-bg) !important;
+  color: var(--note-form-text);
+  transition: var(--transition);
+}
+
+/* ================= ADJUSTMENT FOR DARK THEME INPUTS ================= */
+[data-theme="dark"] .note-form input,
+[data-theme="dark"] .note-form textarea {
+  background-color: rgba(0, 0, 0, 0.2);
+  border-color: var(--note-form-text);
+}
+
+/* Transition halus */
+body,
+.note-item,
+.note-form,
+input,
+textarea {
+  transition: background-color 0.3s ease, color 0.3s ease;
+}
+
+/* Light theme defaults */
 body {
   background-color: #f5f5f5;
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
   margin: 0;
   padding: 20px;
-
   justify-content: center;
 }
 
@@ -17,6 +71,7 @@ h2 {
   color: #333;
 }
 
+/* Note Form */
 .note-form {
   display: flex;
   flex-direction: column;
@@ -25,8 +80,7 @@ h2 {
   padding: 16px;
   border-radius: 12px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
-  border: 3px solid;
-
+  border: 3px solid black;
   width: 93%;
 }
 
@@ -37,9 +91,18 @@ h2 {
   border: 1px solid #ddd;
   border-radius: 6px;
   font-size: 1em;
-  border: 3px solid;
+  border: 3px solid black;
+  color: black;
+  transition: background-color 0.3s ease, color 0.3s ease;
 }
 
+/* TEMA GELAP: ubah warna teks form */
+:root[data-theme="dark"] .note-form input,
+:root[data-theme="dark"] .note-form textarea {
+  color: black;
+}
+
+/* Button */
 .note-form button {
   background-color: #007bff;
   color: white;
@@ -48,10 +111,12 @@ h2 {
   border-radius: 6px;
   cursor: pointer;
 }
+
 .note-form button:hover {
   background-color: #0056b3;
 }
 
+/* Note List */
 .note-list {
   display: flex;
   flex-direction: column;
@@ -94,11 +159,13 @@ h2 {
   background-color: #e74c3c;
   color: white;
 }
+
 .note-item button:last-of-type {
   background-color: #2ecc71;
   color: white;
 }
 
+/* Search Bar */
 .search-bar {
   color: #222;
 }

@@ -1,10 +1,33 @@
+/* Ganti selector body dengan :root */
+:root {
+  --bg-color: #d4d7a9;
+  --text-color: #333333;
+  --primary-color: #007bff;
+}
+
+:root[data-theme="dark"] {
+  --bg-color: #30353f;
+  --text-color: #ffffff;
+  --primary-color: #0d6efd;
+}
+
 body {
+  background-color: var(--bg-color);
+  color: var(--text-color);
   font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-image: url(./images/bg.jpg);
-  background-size: cover;
-  background-position: center;
   margin: 0;
   padding: 20px;
+}
+
+body,
+.note-item,
+.detail-page,
+.nav-container,
+.nav-link,
+.theme-toggle,
+.logout-button {
+  transition: background-color 0.4s ease-in-out, color 0.4s ease-in-out,
+    border-color 0.4s ease-in-out;
 }
 
 .app-container {
@@ -14,6 +37,7 @@ body {
 
 h1,
 h2,
+p,
 .nav-link {
   color: white;
   font-family: "pacifio", cursive;
@@ -57,7 +81,8 @@ h2,
 }
 
 .note-item {
-  background-color: white;
+  background-color: var(--bg-color);
+  color: var(--text-color);
   padding: 15px;
   margin-bottom: 10px;
   border-radius: 6px;
@@ -121,7 +146,9 @@ h2,
   max-width: 800px;
   margin: 2rem auto;
   padding: 1rem;
-  background: white;
+  background: var(--bg-color);
+  color: var(--text-color);
+  transition: background-color 0.3s ease, color 0.3s ease;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 3px solid;
@@ -259,19 +286,90 @@ h2,
 
 /* Efek saat hover */
 .logout-button:hover {
-  background-color: darkviolet; /* Warna lebih gelap */
-  color: white;
+  background-color: greenyellow; /* Warna lebih gelap */
+  color: purple;
   cursor: pointer; /* Ubah kursor jadi tangan */
   transform: scale(1.05); /* Sedikit membesar */
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Bayangan */
 }
+/* Dark theme */
+[data-theme="dark"] .logout-button {
+  background-color: greenyellow;
+  color: purple;
+  border: 1px solid black;
+}
 
-/*  */
-/* Cara 1: Langsung target class username */
+/* Hover effects */
+.logout-button:hover {
+  background-color: greenyellow;
+  color: white;
+  transform: scale(1.05);
+  border-color: transparent;
+}
 
-/* Cara 2: Jika memang ingin spesifik span dengan class username */
+[data-theme="dark"] .logout-button:hover {
+  background-color: purple;
+  color: greenyellow;
+  border-color: black;
+}
+
+/* Active state */
+.logout-button:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
 span.username,
 .notes-list__empty-message {
   color: black;
   font-family: "Pacifico", cursive;
+}
+
+/* thema togle */
+
+.theme-toggle {
+  background-color: purple;
+  color: black;
+  border: 1px solid black;
+  margin-right: -10px;
+  padding: 6px;
+  border-radius: 25%;
+  cursor: pointer;
+  font-weight: bold;
+  transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
+}
+
+.theme-toggle:hover {
+  background-color: greenyellow;
+  color: white;
+  transform: scale(1.05); /* efek "membesar" saat hover */
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+  opacity: 0.8;
+}
+
+/* Tema gelap */
+[data-theme="dark"] .theme-toggle {
+  background-color: greenyellow;
+  color: purple;
+  border: 1px solid black;
+}
+
+.theme-toggle:hover {
+  background-color: greenyellow;
+  color: white;
+  transform: scale(1.05);
+}
+
+[data-theme="dark"] .theme-toggle:hover {
+  background-color: purple;
+  color: greenyellow;
+  border-color: black;
+}
+
+.theme-toggle:active {
+  transform: scale(0.95);
+  opacity: 0.8;
 }

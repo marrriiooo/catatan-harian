@@ -1,6 +1,5 @@
 import React, { Component } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
-import { getInitialData } from "./utils";
 import Navigation from "./components/Navigation";
 import HomePage from "./pages/HomePage";
 import ArchivePage from "./pages/ArchivePage";
@@ -8,13 +7,27 @@ import DetailPage from "./pages/DetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import { getUserLogged, putAccessToken } from "./utils/api";
+import { ErrorBoundary } from "react-error-boundary";
+import { ThemeProvider } from "./contexts/ThemeContext";
+
+// Error boundary component di luar class App
+function ErrorFallback({ error, resetErrorBoundary }) {
+  return (
+    <div className="error-boundary">
+      <h2>Terjadi Kesalahan!</h2>
+      <pre>{error.message}</pre>
+      <button onClick={resetErrorBoundary} className="retry-button">
+        Coba Lagi
+      </button>
+    </div>
+  );
+}
 
 class App extends Component {
   constructor(props) {
     super(props);
 
     this.state = {
-      notes: getInitialData(),
       authedUser: null,
       loading: true,
     };
@@ -54,90 +67,47 @@ class App extends Component {
     this.setState({ authedUser: null });
   };
 
-  addNote = (newNote) => {
-    this.setState((prevState) => ({
-      notes: [newNote, ...prevState.notes],
-    }));
-  };
-
-  deleteNote = (id) => {
-    this.setState((prevState) => ({
-      notes: prevState.notes.filter((note) => note.id !== id),
-    }));
-  };
-
-  toggleArchive = (id) => {
-    this.setState((prevState) => ({
-      notes: prevState.notes.map((note) =>
-        note.id === id ? { ...note, archived: !note.archived } : note
-      ),
-    }));
-  };
-
   render() {
-    const { notes, authedUser, loading } = this.state;
+    const { authedUser, loading } = this.state;
 
     if (loading) {
       return <p>Loading...</p>;
     }
 
-    if (authedUser === null) {
-      return (
-        <div className="app-container">
-          <Routes>
-            <Route
-              path="/*"
-              element={<LoginPage loginSuccess={this.onLoginSuccess} />}
-            />
-            <Route path="/register" element={<RegisterPage />} />
-          </Routes>
-        </div>
-      );
-    }
-
     return (
-      <div className="app-container">
-        <header>
-          <h1>Catatan Pribadi</h1>
-          <Navigation name={authedUser.name} onLogout={this.onLogout} />
-        </header>
-        <main>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <HomePage
-                  notes={notes}
-                  onAddNote={this.addNote}
-                  onDelete={this.deleteNote}
-                  onArchive={this.toggleArchive}
+      <ErrorBoundary
+        FallbackComponent={ErrorFallback}
+        onReset={() => window.location.reload()}
+      >
+        <ThemeProvider>
+          <div className="app-container">
+            {authedUser === null ? (
+              <Routes>
+                <Route
+                  path="/*"
+                  element={<LoginPage loginSuccess={this.onLoginSuccess} />}
                 />
-              }
-            />
-            <Route
-              path="/archives"
-              element={
-                <ArchivePage
-                  notes={notes}
-                  onDelete={this.deleteNote}
-                  onArchive={this.toggleArchive}
-                />
-              }
-            />
-            <Route
-              path="/notes/:id"
-              element={
-                <DetailPage
-                  notes={notes}
-                  onDelete={this.deleteNote}
-                  onArchive={this.toggleArchive}
-                />
-              }
-            />
-            <Route path="*" element={<Navigate to="/" replace />} />
-          </Routes>
-        </main>
-      </div>
+                <Route path="/register" element={<RegisterPage />} />
+              </Routes>
+            ) : (
+              <>
+                <header>
+                  <h1>Catatan Pribadi</h1>
+                  <Navigation name={authedUser.name} onLogout={this.onLogout} />
+                </header>
+                <main>
+                  <Routes>
+                    <Route path="/" element={<HomePage />} />
+                    <Route path="/archives" element={<ArchivePage />} />
+                    <Route path="/notes/:id" element={<DetailPage />} />
+                    <Route path="*" element={<Navigate to="/" replace />} />
+                  </Routes>
+                </main>
+              </>
+            )}
+          </div>
+        </ThemeProvider>
+      </ErrorBoundary>
     );
   }
 }

@@ -1,8 +1,6 @@
 import PropTypes from "prop-types";
 import NoteItem from "./NoteItem";
 
-// jadi ini ada bagian dimana nanti componen note item akan di jadikan list atau nanti item akan di listkan atau di rapihkan
-
 function NoteList({ notes, onDelete, onArchive }) {
   if (notes.length === 0) {
     return <p style={{ fontWeight: "bold" }}>Tidak ada catatan</p>;
