@@ -1,4 +1,3 @@
-
 import React, { Component } from "react";
 import { Routes, Route, Navigate } from "react-router-dom";
 import { getInitialData } from "./utils";
@@ -100,7 +99,7 @@ class App extends Component {
       <div className="app-container">
         <header>
           <h1>Catatan Pribadi</h1>
-          <Navigation onLogout={this.onLogout} />
+          <Navigation name={authedUser.name} onLogout={this.onLogout} />
         </header>
         <main>
           <Routes>
@@ -141,7 +140,6 @@ class App extends Component {
       </div>
     );
   }
-
 }
 
 export default App;

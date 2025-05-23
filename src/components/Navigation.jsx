@@ -1,7 +1,8 @@
 import React from "react";
+import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 
-const Navigation = () => {
+const Navigation = ({ name, onLogout }) => {
   return (
     <nav className="nav-container">
       <ul className="nav-list">
@@ -27,8 +28,20 @@ const Navigation = () => {
           </NavLink>
         </li>
       </ul>
+
+      <div className="nav-right">
+        <span className="username">Halo, {name}</span>
+        <button onClick={onLogout} className="logout-button">
+          Logout
+        </button>
+      </div>
     </nav>
   );
+};
+
+Navigation.propTypes = {
+  name: PropTypes.string.isRequired,
+  onLogout: PropTypes.func.isRequired,
 };
 
 export default Navigation;
