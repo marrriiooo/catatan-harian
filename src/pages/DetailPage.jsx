@@ -1,50 +1,69 @@
-// src/pages/DetailPage.jsx
-import React from "react";
-import { useParams } from "react-router-dom";
-import { getNote } from "../utils/api";
+import React, { useEffect, useState } from "react";
+import { useParams, useNavigate } from "react-router-dom";
+import { getNote, deleteNote, archiveNote, unarchiveNote } from "../utils/api";
 
-function DetailPageWrapper() {
+function DetailPage() {
   const { id } = useParams();
-  return <DetailPage id={id} />;
-}
+  const navigate = useNavigate();
+  const [note, setNote] = useState(null);
+  const [error, setError] = useState(null);
 
-class DetailPage extends React.Component {
-  constructor(props) {
-    super(props);
+  useEffect(() => {
+    fetchNote();
+  }, [id]);
 
-    this.state = {
-      note: null,
-      loading: true,
-    };
-  }
-
-  async componentDidMount() {
+  const fetchNote = async () => {
     try {
-      const note = await getNote(this.props.id);
-      this.setState({ note, loading: false });
-    } catch (error) {
-      this.setState({ loading: false });
-      alert(error.message);
+      const data = await getNote(id);
+      setNote(data);
+    } catch (err) {
+      setError(err.message);
     }
+  };
+
+  const handleDelete = async () => {
+    try {
+      await deleteNote(id);
+      navigate("/");
+    } catch (err) {
+      alert("Gagal menghapus catatan: " + err.message);
+    }
+  };
+
+  const handleToggleArchive = async () => {
+    try {
+      if (note.archived) {
+        await unarchiveNote(id);
+        navigate("/");
+      } else {
+        await archiveNote(id);
+        navigate("/archives");
+      }
+    } catch (err) {
+      alert("Gagal mengubah status arsip: " + err.message);
+    }
+  };
+
+  if (error) {
+    return <p className="notes-list__empty-message">{error}</p>;
   }
 
-  render() {
-    if (this.state.loading) {
-      return <p>Loading...</p>;
-    }
-
-    if (!this.state.note) {
-      return <p>Catatan tidak ditemukan!</p>;
-    }
-
-    return (
-      <section>
-        <h2>{this.state.note.title}</h2>
-        <p>{new Date(this.state.note.createdAt).toLocaleString()}</p>
-        <p>{this.state.note.body}</p>
-      </section>
-    );
+  if (!note) {
+    return <p className="notes-list__empty-message">Memuat catatan...</p>;
   }
+
+  return (
+    <div className="note-detail">
+      <h2 className="note-detail__title">{note.title}</h2>
+      <p className="note-detail__body">{note.body}</p>
+      <div className="note-detail__actions">
+        <button onClick={handleDelete}>Hapus</button>
+        <button onClick={handleToggleArchive}>
+          {note.archived ? "Pindahkan" : "Arsipkan"}
+        </button>
+      </div>
+    </div>
+  );
 }
 
-export default DetailPageWrapper;
+export default DetailPage;

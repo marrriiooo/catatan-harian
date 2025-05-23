@@ -1,43 +1,86 @@
-import React from "react";
-import PropTypes from "prop-types";
-import NoteList from "../components/NoteList";
+import React, { useEffect, useState, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
-import { useNavigate, useSearchParams } from "react-router-dom";
+import NoteList from "../components/NoteList";
+import { getArchivedNotes, deleteNote, unarchiveNote } from "../utils/api";
 
-function ArchivePage({ notes, onDelete, onArchive }) {
-  const [searchParams, setSearchParams] = useSearchParams();
+function ArchivePage() {
+  const location = useLocation();
   const navigate = useNavigate();
-  const keyword = searchParams.get("keyword") || "";
+  const [notes, setNotes] = useState([]);
+  const [keyword, setKeyword] = useState(() => {
+    const searchParams = new URLSearchParams(location.search);
+    return searchParams.get("keyword") || "";
+  });
 
-  const filteredNotes = notes.filter(
-    (note) =>
-      note.archived && note.title.toLowerCase().includes(keyword.toLowerCase())
-  );
+  useEffect(() => {
+    fetchNotes();
+  }, []);
+
+  useEffect(() => {
+    const searchParams = new URLSearchParams(location.search);
+    const newKeyword = searchParams.get("keyword") || "";
+    setKeyword(newKeyword);
+  }, [location.search]);
+
+  const fetchNotes = async () => {
+    try {
+      const result = await getArchivedNotes();
+      setNotes(result || []);
+    } catch (err) {
+      console.error("Gagal memuat catatan arsip:", err);
+      setNotes([]);
+    }
+  };
+
+  const handleSearch = (keyword) => {
+    navigate(`?keyword=${keyword}`);
+    setKeyword(keyword);
+  };
+
+  const handleDelete = async (id) => {
+    try {
+      await deleteNote(id);
+      await fetchNotes();
+    } catch (err) {
+      console.error("Gagal menghapus catatan:", err);
+    }
+  };
+
+  const handleUnarchive = async (id) => {
+    try {
+      await unarchiveNote(id);
+      await fetchNotes();
+      navigate("/");
+    } catch (err) {
+      console.error("Gagal memindahkan catatan:", err);
+    }
+  };
+
+  const filteredNotes = useMemo(() => {
+    return notes.filter(
+      (note) =>
+        note.archived &&
+        note.title.toLowerCase().includes(keyword.toLowerCase())
+    );
+  }, [notes, keyword]);
 
   return (
     <>
-      <SearchBar
-        keyword={keyword}
-        onSearch={(keyword) => setSearchParams({ keyword })}
-      />
+      <SearchBar keyword={keyword} onSearch={handleSearch} />
 
-      <h2>Catatan Arsip</h2>
-      <NoteList
-        notes={filteredNotes}
-        onDelete={onDelete}
-        onArchive={(id) => {
-          onArchive(id);
-          navigate("/");
-        }}
-      />
+      <h2>Arsip Catatan</h2>
+      {filteredNotes.length > 0 ? (
+        <NoteList
+          notes={filteredNotes}
+          onDelete={handleDelete}
+          onArchive={handleUnarchive}
+        />
+      ) : (
+        <p className="notes-list__empty-message">Tidak ada catatan arsip</p>
+      )}
     </>
   );
 }
-
-ArchivePage.propTypes = {
-  notes: PropTypes.array.isRequired,
-  onDelete: PropTypes.func.isRequired,
-  onArchive: PropTypes.func.isRequired,
-};
 
 export default ArchivePage;

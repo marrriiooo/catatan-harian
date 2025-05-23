@@ -1,37 +1,35 @@
 import React from "react";
-import { login } from "../utils/api";
 import { useNavigate, Link } from "react-router-dom";
 import PropTypes from "prop-types";
+import { login } from "../utils/api";
 import LoginForm from "../components/LoginFrom";
 
 function LoginPage({ loginSuccess }) {
-  //? Yang ini
   const navigate = useNavigate();
 
-  async function onLoginHandler({ email, password }) {
+  const onLoginHandler = async ({ email, password }) => {
     try {
       const token = await login({ email, password });
-      //localStorage.setItem("accessToken", token);
-      loginSuccess({ accessToken: token }); //? biar state App diperbarui
+      loginSuccess({ accessToken: token });
       navigate("/");
     } catch (error) {
-      alert(error.message);
+      alert("Login gagal: " + error.message);
     }
-  }
+  };
 
   return (
     <div className="login-page">
       <h2>Silakan masuk untuk melanjutkan...</h2>
       <LoginForm login={onLoginHandler} />
       <p>
-        Belum punya akun ? <Link to="/register">Daftar</Link>
+        Belum punya akun? <Link to="/register">Daftar</Link>
       </p>
     </div>
   );
 }
 
 LoginPage.propTypes = {
-  loginSuccess: PropTypes.func.isRequired, //? Tambahkan juga proptypes
+  loginSuccess: PropTypes.func.isRequired,
 };
 
 export default LoginPage;
