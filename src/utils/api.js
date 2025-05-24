@@ -1,5 +1,9 @@
 const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
+function getAccessToken() {
+  return localStorage.getItem("accessToken");
+}
+
 export function putAccessToken(token) {
   localStorage.setItem("accessToken", token);
 }
@@ -98,31 +102,32 @@ export async function addNote({ title, body }) {
   const responseJson = await response.json();
 
   if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
+    return { error: true, data: null };
   }
 
-  return responseJson.data.note;
+  return { error: false, data: responseJson.data };
 }
+
 export async function getActiveNotes() {
-  const response = await fetchWithToken(`${API_BASE_URL}/notes`);
+  const response = await fetchWithToken(`${BASE_URL}/notes`);
   const responseJson = await response.json();
 
   if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
+    return { error: true, data: null };
   }
 
-  return responseJson.data.notes;
+  return { error: false, data: responseJson.data };
 }
 
 export async function getArchivedNotes() {
-  const response = await fetchWithToken(`${API_BASE_URL}/notes/archived`);
+  const response = await fetchWithToken(`${BASE_URL}/notes/archived`);
   const responseJson = await response.json();
 
   if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
+    return { error: true, data: null };
   }
 
-  return responseJson.data.notes;
+  return { error: false, data: responseJson.data };
 }
 
 export async function getNote(id) {
@@ -130,50 +135,50 @@ export async function getNote(id) {
   const responseJson = await response.json();
 
   if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
+    return { error: true, data: null };
   }
 
-  return responseJson.data.note;
+  return { error: false, data: responseJson.data };
 }
 
 export async function archiveNote(id) {
-  const response = await fetchWithToken(`${API_BASE_URL}/notes/${id}/archive`, {
+  const response = await fetchWithToken(`${BASE_URL}/notes/${id}/archive`, {
     method: "POST",
   });
 
   const responseJson = await response.json();
+
   if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
+    return { error: true, data: null };
   }
 
-  return responseJson.data.note;
+  return { error: false, data: responseJson.data };
 }
 
-export async function unarchiveNote(id) {
-  const response = await fetchWithToken(
-    `${API_BASE_URL}/notes/${id}/unarchive`,
-    {
-      method: "POST",
-    }
-  );
+async function unarchiveNote(id) {
+  const response = await fetchWithToken(`${BASE_URL}/notes/${id}/unarchive`, {
+    method: "POST",
+  });
 
   const responseJson = await response.json();
+
   if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
+    return { error: true, data: null };
   }
 
-  return responseJson.data.note;
+  return { error: false, data: responseJson.data };
 }
 
-export async function deleteNote(id) {
-  const response = await fetchWithToken(`${API_BASE_URL}/notes/${id}`, {
+async function deleteNote(id) {
+  const response = await fetchWithToken(`${BASE_URL}/notes/${id}`, {
     method: "DELETE",
   });
 
   const responseJson = await response.json();
+
   if (responseJson.status !== "success") {
-    throw new Error(responseJson.message);
+    return { error: true, data: null };
   }
 
-  return responseJson;
+  return { error: false, data: responseJson.data };
 }

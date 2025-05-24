@@ -81,8 +81,8 @@ p,
 }
 
 .note-item {
-  background-color: var(--bg-color);
-  color: var(--text-color);
+  background-color: white;
+  color: black;
   padding: 15px;
   margin-bottom: 10px;
   border-radius: 6px;
@@ -92,9 +92,12 @@ p,
 
 .note-item h3 {
   margin-top: 0;
+  text-decoration: none;
+  font-weight: bold;
 }
 
-.note-item button {
+.note-item button,
+.note-detail button {
   margin-right: 10px;
   background-color: #e74c3c;
   border: none;
@@ -104,12 +107,17 @@ p,
   border-radius: 4px;
 }
 
-.note-item button.archive-btn {
+.note-item button.archive-btn,
+.note-detail button.archive-btn {
   background-color: #2ecc71;
 }
 
 .note-item button:hover {
   opacity: 0.8;
+}
+
+.note-item__body {
+  color: #333;
 }
 
 /* navigasi  */
@@ -142,16 +150,21 @@ p,
 
 /* detailpage */
 /* Detail Page Styles */
-.detail-page {
+.note-detail {
   max-width: 800px;
   margin: 2rem auto;
   padding: 1rem;
-  background: var(--bg-color);
-  color: var(--text-color);
+  background: white;
+  color: black;
   transition: background-color 0.3s ease, color 0.3s ease;
   border-radius: 8px;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   border: 3px solid;
+}
+
+.note-detail h2,
+p {
+  color: #333;
 }
 
 .back-button {

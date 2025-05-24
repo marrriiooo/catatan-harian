@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import NoteList from "../components/NoteList";
-import { getArchivedNotes, deleteNote, unarchiveNote } from "../utils/api";
+import { getArchivedNotes } from "../utils/api"; // Hanya import yang tersedia
 
 function ArchivePage() {
   const location = useLocation();
@@ -13,7 +13,7 @@ function ArchivePage() {
     return searchParams.get("keyword") || "";
   });
 
-  useEffect(() => {
+  React.useEffect(() => {
     fetchNotes();
   }, []);
 
@@ -25,8 +25,8 @@ function ArchivePage() {
 
   const fetchNotes = async () => {
     try {
-      const result = await getArchivedNotes();
-      setNotes(result || []);
+      const { data } = await getArchivedNotes();
+      setNotes(data || []);
     } catch (err) {
       console.error("Gagal memuat catatan arsip:", err);
       setNotes([]);
@@ -40,7 +40,23 @@ function ArchivePage() {
 
   const handleDelete = async (id) => {
     try {
-      await deleteNote(id);
+      const response = await fetch(
+        `https://notes-api.dicoding.dev/v1/notes/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const responseJson = await response.json();
+
+      if (responseJson.status !== "success") {
+        throw new Error(responseJson.message);
+      }
+
       await fetchNotes();
     } catch (err) {
       console.error("Gagal menghapus catatan:", err);
@@ -49,7 +65,23 @@ function ArchivePage() {
 
   const handleUnarchive = async (id) => {
     try {
-      await unarchiveNote(id);
+      const response = await fetch(
+        `https://notes-api.dicoding.dev/v1/notes/${id}/unarchive`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const responseJson = await response.json();
+
+      if (responseJson.status !== "success") {
+        throw new Error(responseJson.message);
+      }
+
       await fetchNotes();
       navigate("/");
     } catch (err) {
@@ -75,6 +107,7 @@ function ArchivePage() {
           notes={filteredNotes}
           onDelete={handleDelete}
           onArchive={handleUnarchive}
+          archiveText="Pindahkan"
         />
       ) : (
         <p className="notes-list__empty-message">Tidak ada catatan arsip</p>

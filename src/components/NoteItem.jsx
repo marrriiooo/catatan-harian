@@ -1,11 +1,21 @@
 import { Link } from "react-router-dom";
 import PropTypes from "prop-types";
-import { deleteNote, archiveNote, unarchiveNote } from "../utils/api";
+import { showFormattedDate } from "./../utils/index";
 
-function NoteItem({ id, title, body, createdAt, archived, refreshNotes }) {
+function NoteItem({
+  id,
+  title,
+  body,
+  createdAt,
+  archived,
+  refreshNotes,
+  onDeleteNote,
+  onArchiveNote,
+  onUnarchiveNote,
+}) {
   const handleDelete = async () => {
     try {
-      await deleteNote(id);
+      await onDeleteNote(id);
       refreshNotes();
     } catch (error) {
       alert(error.message);
@@ -14,21 +24,12 @@ function NoteItem({ id, title, body, createdAt, archived, refreshNotes }) {
 
   const handleToggleArchive = async () => {
     try {
-      archived ? await unarchiveNote(id) : await archiveNote(id);
+      archived ? await onUnarchiveNote(id) : await onArchiveNote(id);
       refreshNotes();
     } catch (error) {
       alert(error.message);
     }
   };
-
-  // Format tanggal langsung di komponen
-  const formattedDate = new Date(createdAt).toLocaleDateString("id-ID", {
-    day: "numeric",
-    month: "numeric",
-    year: "numeric",
-    hour: "2-digit",
-    minute: "2-digit",
-  });
 
   return (
     <div className="note-item">
@@ -36,7 +37,7 @@ function NoteItem({ id, title, body, createdAt, archived, refreshNotes }) {
         <h3>{title}</h3>
       </Link>
       <p className="note-item__body">{body}</p>
-      <small className="note-item__date">{formattedDate}</small>
+      <small className="note-item__date">{showFormattedDate(createdAt)}</small>
       <div className="note-item__actions">
         <button
           onClick={handleDelete}
@@ -64,6 +65,9 @@ NoteItem.propTypes = {
   createdAt: PropTypes.string.isRequired,
   archived: PropTypes.bool.isRequired,
   refreshNotes: PropTypes.func.isRequired,
+  onDeleteNote: PropTypes.func.isRequired,
+  onArchiveNote: PropTypes.func.isRequired,
+  onUnarchiveNote: PropTypes.func.isRequired,
 };
 
 export default NoteItem;

@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
-import { getNote, deleteNote, archiveNote, unarchiveNote } from "../utils/api";
+import { getNote } from "../utils/api"; // Hanya import fungsi yang tersedia
 
 function DetailPage() {
   const { id } = useParams();
@@ -14,7 +14,7 @@ function DetailPage() {
 
   const fetchNote = async () => {
     try {
-      const data = await getNote(id);
+      const { data } = await getNote(id); // Perhatikan struktur response
       setNote(data);
     } catch (err) {
       setError(err.message);
@@ -23,7 +23,23 @@ function DetailPage() {
 
   const handleDelete = async () => {
     try {
-      await deleteNote(id);
+      const response = await fetch(
+        `https://notes-api.dicoding.dev/v1/notes/${id}`,
+        {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const responseJson = await response.json();
+
+      if (responseJson.status !== "success") {
+        throw new Error(responseJson.message);
+      }
+
       navigate("/");
     } catch (err) {
       alert("Gagal menghapus catatan: " + err.message);
@@ -32,11 +48,27 @@ function DetailPage() {
 
   const handleToggleArchive = async () => {
     try {
+      const endpoint = note.archived ? "unarchive" : "archive";
+      const response = await fetch(
+        `https://notes-api.dicoding.dev/v1/notes/${id}/${endpoint}`,
+        {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const responseJson = await response.json();
+
+      if (responseJson.status !== "success") {
+        throw new Error(responseJson.message);
+      }
+
       if (note.archived) {
-        await unarchiveNote(id);
         navigate("/");
       } else {
-        await archiveNote(id);
         navigate("/archives");
       }
     } catch (err) {
@@ -57,8 +89,13 @@ function DetailPage() {
       <h2 className="note-detail__title">{note.title}</h2>
       <p className="note-detail__body">{note.body}</p>
       <div className="note-detail__actions">
-        <button onClick={handleDelete}>Hapus</button>
-        <button onClick={handleToggleArchive}>
+        <button onClick={handleDelete} className="delete-btn">
+          Hapus
+        </button>
+        <button
+          onClick={handleToggleArchive}
+          className={note.archived ? "unarchive-btn" : "archive-btn"}
+        >
           {note.archived ? "Pindahkan" : "Arsipkan"}
         </button>
       </div>
