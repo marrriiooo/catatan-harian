@@ -96,8 +96,7 @@ p,
   font-weight: bold;
 }
 
-.note-item button,
-.note-detail button {
+.note-item button {
   margin-right: 10px;
   background-color: #e74c3c;
   border: none;
@@ -107,8 +106,7 @@ p,
   border-radius: 4px;
 }
 
-.note-item button.archive-btn,
-.note-detail button.archive-btn {
+.note-item button.archive-btn {
   background-color: #2ecc71;
 }
 
@@ -165,6 +163,57 @@ p,
 .note-detail h2,
 p {
   color: #333;
+}
+/* Style untuk container tombol */
+.note-detail__actions {
+  display: flex;
+  gap: 12px; /* Memberi jarak antara tombol */
+  margin-top: 20px;
+}
+
+/* Style dasar untuk semua tombol */
+.note-detail__actions button {
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  color: white;
+  font-weight: 500;
+  font-size: 14px;
+  transition: all 0.3s ease;
+}
+
+/* Hover effect untuk semua tombol */
+.note-detail__actions button:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+/* Style khusus tombol Hapus */
+.note-detail__actions .delete-btn {
+  background-color: #ff4444; /* Merah */
+}
+
+.note-detail__actions .delete-btn:hover {
+  background-color: #cc0000; /* Merah lebih gelap saat hover */
+}
+
+/* Style khusus tombol Arsipkan */
+.note-detail__actions .archive-btn {
+  background-color: #00c851; /* Hijau */
+}
+
+.note-detail__actions .archive-btn:hover {
+  background-color: #007e33; /* Hijau lebih gelap saat hover */
+}
+
+/* Style khusus tombol Pindahkan */
+.note-detail__actions .unarchive-btn {
+  background-color: #ffbb33; /* Kuning/Oranye */
+}
+
+.note-detail__actions .unarchive-btn:hover {
+  background-color: #ff8800; /* Oranye lebih gelap saat hover */
 }
 
 .back-button {

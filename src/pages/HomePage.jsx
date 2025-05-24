@@ -13,37 +13,33 @@ function HomePage() {
   const [notes, setNotes] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const checkAuth = () => {
-    const token = localStorage.getItem("accessToken");
-    if (!token) {
-      navigate("/login");
-      return false;
-    }
-    return true;
-  };
-
-  useEffect(() => {
-    const searchParams = new URLSearchParams(location.search);
-    setKeyword(searchParams.get("keyword") || "");
-  }, [location.search]);
+  React.useEffect(() => {
+    getActiveNotes().then(({ data }) => {
+      setNotes(data);
+      setIsLoading(false); // Ini yang diperbaiki
+    });
+  }, []);
 
   const fetchNotes = async () => {
-    if (!checkAuth()) return;
-
     setIsLoading(true);
     try {
-      const { data, error } = await getActiveNotes();
-      if (error) throw new Error(error.message);
-      setNotes(data || []);
-    } catch (error) {
-      console.error("Error:", error);
-      alert("Gagal memuat catatan: " + error.message);
-      if (error.message.includes("authentication")) {
-        localStorage.removeItem("accessToken");
-        navigate("/login");
+      const response = await fetch(`${API_BASE_URL}/notes`, {
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+        },
+      });
+      const result = await response.json();
+      console.log("Fetch notes result:", result);
+
+      if (result.status !== "success") {
+        throw new Error(result.message || "Failed to fetch notes");
       }
+
+      setNotes(result.data || []);
+    } catch (error) {
+      console.error("Fetch error:", error);
+      alert(error.message);
     } finally {
       setIsLoading(false);
     }
@@ -58,9 +54,7 @@ function HomePage() {
   };
 
   const handleAddNote = async (note) => {
-    if (!checkAuth()) return;
-
-    setIsSubmitting(true);
+    setIsLoading(true);
     try {
       const { error, data: newNote } = await addNote(note);
       if (error) throw new Error(error.message);
@@ -68,21 +62,21 @@ function HomePage() {
       setNotes((prevNotes) => [newNote, ...prevNotes]);
       setKeyword("");
       navigate(location.pathname, { replace: true });
-      alert("Catatan berhasil ditambahkan!");
     } catch (err) {
       console.error("Error:", err);
       alert("Gagal menambahkan catatan: " + err.message);
     } finally {
-      setIsSubmitting(false);
+      setIsLoading(false);
     }
   };
 
-  const handleDeleteNote = async (id) => {
-    if (!checkAuth()) return;
+  // Di bagian handler functions:
 
+  const handleDeleteNote = async (id) => {
     try {
+      // Tambahkan konfirmasi
       const confirmDelete = window.confirm(
-        "Apakah Anda yakin ingin menghapus catatan ini?"
+        "Yakin ingin menghapus catatan ini?"
       );
       if (!confirmDelete) return;
 
@@ -94,23 +88,24 @@ function HomePage() {
         },
       });
 
-      const responseJson = await response.json();
+      const result = await response.json();
+      console.log("Delete response:", result); // Debugging
 
-      if (responseJson.status !== "success") {
-        throw new Error(responseJson.message);
+      if (result.status !== "success") {
+        throw new Error(result.message || "Gagal menghapus catatan");
       }
 
-      await fetchNotes();
-      alert("Catatan berhasil dihapus!");
+      // Perbarui state secara langsung (optimistic update)
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
     } catch (error) {
-      console.error("Error:", error);
-      alert("Gagal menghapus catatan: " + error.message);
+      console.error("Delete error:", error);
+      alert(error.message);
+      // Refresh data jika error
+      await fetchNotes();
     }
   };
 
   const handleArchiveNote = async (id) => {
-    if (!checkAuth()) return;
-
     try {
       const response = await fetch(`${API_BASE_URL}/notes/${id}/archive`, {
         method: "POST",
@@ -120,17 +115,20 @@ function HomePage() {
         },
       });
 
-      const responseJson = await response.json();
+      const result = await response.json();
+      console.log("Archive response:", result); // Debugging
 
-      if (responseJson.status !== "success") {
-        throw new Error(responseJson.message);
+      if (result.status !== "success") {
+        throw new Error(result.message || "Gagal mengarsipkan catatan");
       }
 
-      await fetchNotes();
-      alert("Catatan berhasil diarsipkan!");
+      // Perbarui state secara langsung
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
     } catch (error) {
-      console.error("Error:", error);
-      alert("Gagal mengarsipkan catatan: " + error.message);
+      console.error("Archive error:", error);
+      alert(error.message);
+      // Refresh data jika error
+      await fetchNotes();
     }
   };
 
@@ -144,12 +142,12 @@ function HomePage() {
 
       <div className="note-form-container">
         <h2>Tambah Catatan Baru</h2>
-        <NoteForm onAddNote={handleAddNote} isLoading={isSubmitting} />
+        <NoteForm onAddNote={handleAddNote} isLoading={isLoading} />
       </div>
 
       <h2>Catatan Aktif</h2>
       {isLoading ? (
-        <div className="loading-spinner">Memuat data...</div>
+        <p>Memuat data...</p>
       ) : filteredNotes.length > 0 ? (
         <NoteList
           notes={filteredNotes}
@@ -157,7 +155,7 @@ function HomePage() {
           onArchive={handleArchiveNote}
         />
       ) : (
-        <p className="empty-message" style={{ color: `var(--text-color)` }}>
+        <p style={{ color: `var(--text-color)` }}>
           {keyword
             ? "Tidak ditemukan hasil pencarian"
             : "Tidak ada catatan aktif"}
