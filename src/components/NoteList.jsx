@@ -1,23 +1,17 @@
 import PropTypes from "prop-types";
 import NoteItem from "./NoteItem";
 
-function NoteList({ notes, onDelete, onArchive }) {
-  if (notes.length === 0) {
-    return <p style={{ fontWeight: "bold" }}>Tidak ada catatan</p>;
-  }
-
+function NoteList({ notes, onDeleteNote, onArchiveNote }) {
+  // Sesuaikan prop names
   return (
     <div className="note-list">
       {notes.map((note) => (
         <NoteItem
           key={note.id}
-          id={note.id}
-          title={note.title}
-          body={note.body}
-          createdAt={note.createdAt}
-          archived={note.archived}
-          onDelete={onDelete}
-          onArchive={onArchive}
+          {...note}
+          onDeleteNote={onDeleteNote}
+          onArchiveNote={onArchiveNote}
+          onUnarchiveNote={onArchiveNote} // Gabungkan archive/unarchive
         />
       ))}
     </div>

@@ -3,7 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
 import NoteForm from "../components/NoteForm";
-import { getActiveNotes, addNote } from "../utils/api";
+import { addNote } from "../utils/api";
 
 const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
@@ -13,13 +13,6 @@ function HomePage() {
   const [notes, setNotes] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-
-  React.useEffect(() => {
-    getActiveNotes().then(({ data }) => {
-      setNotes(data);
-      setIsLoading(false); // Ini yang diperbaiki
-    });
-  }, []);
 
   const fetchNotes = async () => {
     setIsLoading(true);
@@ -48,6 +41,8 @@ function HomePage() {
   useEffect(() => {
     fetchNotes();
   }, []);
+
+  // ... rest of your code ...
 
   const handleSearch = (keyword) => {
     navigate(`?keyword=${keyword}`);
@@ -107,28 +102,24 @@ function HomePage() {
 
   const handleArchiveNote = async (id) => {
     try {
-      const response = await fetch(`${API_BASE_URL}/notes/${id}/archive`, {
+      const endpoint = notes.find((n) => n.id === id)?.archived
+        ? "unarchive"
+        : "archive";
+
+      const response = await fetch(`${API_BASE_URL}/notes/${id}/${endpoint}`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          "Content-Type": "application/json",
         },
       });
 
       const result = await response.json();
-      console.log("Archive response:", result); // Debugging
 
-      if (result.status !== "success") {
-        throw new Error(result.message || "Gagal mengarsipkan catatan");
-      }
+      if (result.status !== "success") throw new Error(result.message);
 
-      // Perbarui state secara langsung
-      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+      setNotes((prev) => prev.filter((note) => note.id !== id));
     } catch (error) {
-      console.error("Archive error:", error);
-      alert(error.message);
-      // Refresh data jika error
-      await fetchNotes();
+      alert("Gagal: " + error.message);
     }
   };
 
@@ -151,8 +142,8 @@ function HomePage() {
       ) : filteredNotes.length > 0 ? (
         <NoteList
           notes={filteredNotes}
-          onDelete={handleDeleteNote}
-          onArchive={handleArchiveNote}
+          onDeleteNote={handleDeleteNote} // Pastikan nama prop ini
+          onArchiveNote={handleArchiveNote}
         />
       ) : (
         <p style={{ color: `var(--text-color)` }}>

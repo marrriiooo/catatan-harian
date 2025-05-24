@@ -3,6 +3,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import NoteList from "../components/NoteList";
 import { getArchivedNotes } from "../utils/api"; // Hanya import yang tersedia
+const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
 function ArchivePage() {
   const location = useLocation();
@@ -38,28 +39,36 @@ function ArchivePage() {
     setKeyword(keyword);
   };
 
-  const handleDelete = async (id) => {
+  const handleDeleteNote = async (id) => {
     try {
-      const response = await fetch(
-        `https://notes-api.dicoding.dev/v1/notes/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            "Content-Type": "application/json",
-          },
-        }
+      // Tambahkan konfirmasi
+      const confirmDelete = window.confirm(
+        "Yakin ingin menghapus catatan ini?"
       );
+      if (!confirmDelete) return;
 
-      const responseJson = await response.json();
+      const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+        method: "DELETE",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "application/json",
+        },
+      });
 
-      if (responseJson.status !== "success") {
-        throw new Error(responseJson.message);
+      const result = await response.json();
+      console.log("Delete response:", result); // Debugging
+
+      if (result.status !== "success") {
+        throw new Error(result.message || "Gagal menghapus catatan");
       }
 
+      // Perbarui state secara langsung (optimistic update)
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+    } catch (error) {
+      console.error("Delete error:", error);
+      alert(error.message);
+      // Refresh data jika error
       await fetchNotes();
-    } catch (err) {
-      console.error("Gagal menghapus catatan:", err);
     }
   };
 
@@ -105,7 +114,7 @@ function ArchivePage() {
       {filteredNotes.length > 0 ? (
         <NoteList
           notes={filteredNotes}
-          onDelete={handleDelete}
+          onDeleteNote={handleDeleteNote}
           onArchive={handleUnarchive}
           archiveText="Pindahkan"
         />
