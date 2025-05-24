@@ -1,5 +1,4 @@
 import React from "react";
-
 import { useNavigate, Link } from "react-router-dom";
 import PropTypes from "prop-types";
 import { login } from "../utils/api";
@@ -29,5 +28,8 @@ function LoginPage({ loginSuccess }) {
     </div>
   );
 }
+LoginPage.propTypes = {
+  loginSuccess: PropTypes.func.isRequired,
+};
 
 export default LoginPage;

@@ -6,6 +6,8 @@ import ArchivePage from "./pages/ArchivePage";
 import DetailPage from "./pages/DetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
+import PropTypes from "prop-types";
+
 import { getUserLogged, putAccessToken } from "./utils/api";
 import { ErrorBoundary } from "react-error-boundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
