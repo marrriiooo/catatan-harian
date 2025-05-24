@@ -1,64 +1,40 @@
-import React from "react";
+import React, { useState } from "react";
 import PropTypes from "prop-types";
 
-class LoginInput extends React.Component {
-  constructor(props) {
-    super(props);
+function LoginInput({ login }) {
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
 
-    this.state = {
-      email: "",
-      password: "",
-    };
+  const onEmailChangeHandler = (event) => {
+    setEmail(event.target.value);
+  };
 
-    this.onEmailChangeHandler = this.onEmailChangeHandler.bind(this);
-    this.onPasswordChangeHandler = this.onPasswordChangeHandler.bind(this);
-    this.onSubmitHandler = this.onSubmitHandler.bind(this);
-  }
+  const onPasswordChangeHandler = (event) => {
+    setPassword(event.target.value);
+  };
 
-  onEmailChangeHandler(event) {
-    this.setState(() => {
-      return {
-        email: event.target.value,
-      };
-    });
-  }
-
-  onPasswordChangeHandler(event) {
-    this.setState(() => {
-      return {
-        password: event.target.value,
-      };
-    });
-  }
-
-  onSubmitHandler(event) {
+  const onSubmitHandler = (event) => {
     event.preventDefault();
+    login({ email, password });
+  };
 
-    this.props.login({
-      email: this.state.email,
-      password: this.state.password,
-    });
-  }
-
-  render() {
-    return (
-      <form onSubmit={this.onSubmitHandler} className="login-input">
-        <input
-          type="email"
-          placeholder="Email"
-          value={this.state.email}
-          onChange={this.onEmailChangeHandler}
-        />
-        <input
-          type="password"
-          placeholder="Password"
-          value={this.state.password}
-          onChange={this.onPasswordChangeHandler}
-        />
-        <button>Masuk</button>
-      </form>
-    );
-  }
+  return (
+    <form onSubmit={onSubmitHandler} className="login-input">
+      <input
+        type="email"
+        placeholder="Email"
+        value={email}
+        onChange={onEmailChangeHandler}
+      />
+      <input
+        type="password"
+        placeholder="Password"
+        value={password}
+        onChange={onPasswordChangeHandler}
+      />
+      <button>Masuk</button>
+    </form>
+  );
 }
 
 LoginInput.propTypes = {

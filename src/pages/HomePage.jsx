@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
@@ -9,13 +9,14 @@ const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
 function HomePage() {
   const location = useLocation();
-  const navigate = useNavigate(); // <-- Ini sudah ada
+  const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const [showArchiveSuccess, setShowArchiveSuccess] = useState(false); // <-- State baru untuk feedback
+  const [showArchiveSuccess, setShowArchiveSuccess] = useState(false);
 
-  const fetchNotes = async () => {
+  // Memoized fetch function to prevent unnecessary recreations
+  const fetchNotes = useCallback(async () => {
     setIsLoading(true);
     try {
       const response = await fetch(`${API_BASE_URL}/notes`, {
@@ -36,97 +37,110 @@ function HomePage() {
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
 
   useEffect(() => {
     fetchNotes();
-  }, []);
+  }, [fetchNotes]);
 
-  const handleSearch = (keyword) => {
-    setKeyword(keyword);
-    navigate(`?keyword=${keyword}`);
-  };
+  const handleSearch = useCallback(
+    (keyword) => {
+      setKeyword(keyword);
+      navigate(`?keyword=${keyword}`);
+    },
+    [navigate]
+  );
 
-  const handleAddNote = async (note) => {
-    setIsLoading(true);
-    try {
-      const { error, data: newNote } = await addNote(note);
-      if (error) throw new Error(error.message);
+  const handleAddNote = useCallback(
+    async (note) => {
+      setIsLoading(true);
+      try {
+        const { error, data: newNote } = await addNote(note);
+        if (error) throw new Error(error.message);
 
-      setNotes((prevNotes) => [newNote, ...prevNotes]);
-      setKeyword("");
-      navigate(location.pathname, { replace: true });
-    } catch (err) {
-      console.error("Error:", err);
-      alert("Gagal menambahkan catatan: " + err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleDeleteNote = async (id) => {
-    try {
-      const confirmDelete = window.confirm(
-        "Yakin ingin menghapus catatan ini?"
-      );
-      if (!confirmDelete) return;
-
-      const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
-        method: "DELETE",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-          "Content-Type": "application/json",
-        },
-      });
-
-      const result = await response.json();
-
-      if (result.status !== "success") {
-        throw new Error(result.message || "Gagal menghapus catatan");
+        setNotes((prevNotes) => [newNote, ...prevNotes]);
+        setKeyword("");
+        navigate(location.pathname, { replace: true });
+      } catch (err) {
+        console.error("Error:", err);
+        alert("Gagal menambahkan catatan: " + err.message);
+      } finally {
+        setIsLoading(false);
       }
+    },
+    [navigate, location.pathname]
+  );
 
-      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
-    } catch (error) {
-      console.error("Delete error:", error);
-      alert(error.message);
-      await fetchNotes();
-    }
-  };
+  const handleDeleteNote = useCallback(
+    async (id) => {
+      try {
+        const confirmDelete = window.confirm(
+          "Yakin ingin menghapus catatan ini?"
+        );
+        if (!confirmDelete) return;
 
-  const handleArchiveNote = async (id) => {
-    try {
-      const confirmArchive = window.confirm("Arsipkan catatan ini?");
-      if (!confirmArchive) return;
+        const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
+          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+            "Content-Type": "application/json",
+          },
+        });
 
-      const response = await fetch(`${API_BASE_URL}/notes/${id}/archive`, {
-        method: "POST",
-        headers: {
-          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-        },
-      });
+        const result = await response.json();
 
-      const result = await response.json();
+        if (result.status !== "success") {
+          throw new Error(result.message || "Gagal menghapus catatan");
+        }
 
-      if (result.status !== "success") throw new Error(result.message);
+        setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+      } catch (error) {
+        console.error("Delete error:", error);
+        alert(error.message);
+        fetchNotes();
+      }
+    },
+    [fetchNotes]
+  );
 
-      setNotes((prev) => prev.filter((note) => note.id !== id));
+  const handleArchiveNote = useCallback(
+    async (id) => {
+      try {
+        const confirmArchive = window.confirm("Arsipkan catatan ini?");
+        if (!confirmArchive) return;
 
-      // Tampilkan feedback sukses
-      setShowArchiveSuccess(true);
+        const response = await fetch(`${API_BASE_URL}/notes/${id}/archive`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          },
+        });
 
-      // Navigasi setelah 2 detik
-      setTimeout(() => {
-        setShowArchiveSuccess(false);
-        navigate("/arsip");
-      }, 2000);
-    } catch (error) {
-      alert("Gagal mengarsipkan: " + error.message);
-    }
-  };
+        const result = await response.json();
 
-  const filteredNotes = notes.filter(({ title, archived }) => {
-    return !archived && title.toLowerCase().includes(keyword.toLowerCase());
-  });
+        if (result.status !== "success") throw new Error(result.message);
+
+        setNotes((prev) => prev.filter((note) => note.id !== id));
+        setShowArchiveSuccess(true);
+
+        const timer = setTimeout(() => {
+          setShowArchiveSuccess(false);
+          navigate("/arsip");
+        }, 2000);
+
+        return () => clearTimeout(timer);
+      } catch (error) {
+        alert("Gagal mengarsipkan: " + error.message);
+      }
+    },
+    [navigate]
+  );
+
+  const filteredNotes = React.useMemo(() => {
+    return notes.filter(({ title, archived }) => {
+      return !archived && title.toLowerCase().includes(keyword.toLowerCase());
+    });
+  }, [notes, keyword]);
 
   return (
     <div className="home-page-container">
