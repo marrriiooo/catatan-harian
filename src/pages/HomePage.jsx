@@ -9,10 +9,11 @@ const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
 function HomePage() {
   const location = useLocation();
-  const navigate = useNavigate();
+  const navigate = useNavigate(); // <-- Ini sudah ada
   const [notes, setNotes] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [showArchiveSuccess, setShowArchiveSuccess] = useState(false); // <-- State baru untuk feedback
 
   const fetchNotes = async () => {
     setIsLoading(true);
@@ -23,7 +24,6 @@ function HomePage() {
         },
       });
       const result = await response.json();
-      console.log("Fetch notes result:", result);
 
       if (result.status !== "success") {
         throw new Error(result.message || "Failed to fetch notes");
@@ -42,9 +42,8 @@ function HomePage() {
     fetchNotes();
   }, []);
 
-  // ... rest of your code ...
-
   const handleSearch = (keyword) => {
+    setKeyword(keyword);
     navigate(`?keyword=${keyword}`);
   };
 
@@ -65,11 +64,8 @@ function HomePage() {
     }
   };
 
-  // Di bagian handler functions:
-
   const handleDeleteNote = async (id) => {
     try {
-      // Tambahkan konfirmasi
       const confirmDelete = window.confirm(
         "Yakin ingin menghapus catatan ini?"
       );
@@ -84,29 +80,25 @@ function HomePage() {
       });
 
       const result = await response.json();
-      console.log("Delete response:", result); // Debugging
 
       if (result.status !== "success") {
         throw new Error(result.message || "Gagal menghapus catatan");
       }
 
-      // Perbarui state secara langsung (optimistic update)
       setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
     } catch (error) {
       console.error("Delete error:", error);
       alert(error.message);
-      // Refresh data jika error
       await fetchNotes();
     }
   };
 
   const handleArchiveNote = async (id) => {
     try {
-      const endpoint = notes.find((n) => n.id === id)?.archived
-        ? "unarchive"
-        : "archive";
+      const confirmArchive = window.confirm("Arsipkan catatan ini?");
+      if (!confirmArchive) return;
 
-      const response = await fetch(`${API_BASE_URL}/notes/${id}/${endpoint}`, {
+      const response = await fetch(`${API_BASE_URL}/notes/${id}/archive`, {
         method: "POST",
         headers: {
           Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
@@ -118,8 +110,17 @@ function HomePage() {
       if (result.status !== "success") throw new Error(result.message);
 
       setNotes((prev) => prev.filter((note) => note.id !== id));
+
+      // Tampilkan feedback sukses
+      setShowArchiveSuccess(true);
+
+      // Navigasi setelah 2 detik
+      setTimeout(() => {
+        setShowArchiveSuccess(false);
+        navigate("/arsip");
+      }, 2000);
     } catch (error) {
-      alert("Gagal: " + error.message);
+      alert("Gagal mengarsipkan: " + error.message);
     }
   };
 
@@ -129,6 +130,12 @@ function HomePage() {
 
   return (
     <div className="home-page-container">
+      {showArchiveSuccess && (
+        <div className="success-message">
+          Catatan berhasil diarsipkan! Mengarahkan ke halaman arsip...
+        </div>
+      )}
+
       <SearchBar keyword={keyword} onSearch={handleSearch} />
 
       <div className="note-form-container">
@@ -142,7 +149,7 @@ function HomePage() {
       ) : filteredNotes.length > 0 ? (
         <NoteList
           notes={filteredNotes}
-          onDeleteNote={handleDeleteNote} // Pastikan nama prop ini
+          onDeleteNote={handleDeleteNote}
           onArchiveNote={handleArchiveNote}
         />
       ) : (

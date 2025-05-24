@@ -2,37 +2,41 @@ import React, { useEffect, useState, useMemo } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 import SearchBar from "../components/SearchBar";
 import NoteList from "../components/NoteList";
-import { getArchivedNotes } from "../utils/api"; // Hanya import yang tersedia
+import { getArchivedNotes } from "../utils/api";
+
 const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
 function ArchivePage() {
   const location = useLocation();
   const navigate = useNavigate();
   const [notes, setNotes] = useState([]);
-  const [keyword, setKeyword] = useState(() => {
-    const searchParams = new URLSearchParams(location.search);
-    return searchParams.get("keyword") || "";
-  });
-
-  React.useEffect(() => {
-    fetchNotes();
-  }, []);
+  const [keyword, setKeyword] = useState("");
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState(null);
 
   useEffect(() => {
     const searchParams = new URLSearchParams(location.search);
-    const newKeyword = searchParams.get("keyword") || "";
-    setKeyword(newKeyword);
+    setKeyword(searchParams.get("keyword") || "");
   }, [location.search]);
 
   const fetchNotes = async () => {
+    setIsLoading(true);
+    setError(null);
     try {
       const { data } = await getArchivedNotes();
       setNotes(data || []);
     } catch (err) {
       console.error("Gagal memuat catatan arsip:", err);
+      setError("Gagal memuat catatan arsip");
       setNotes([]);
+    } finally {
+      setIsLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchNotes();
+  }, []);
 
   const handleSearch = (keyword) => {
     navigate(`?keyword=${keyword}`);
@@ -41,11 +45,12 @@ function ArchivePage() {
 
   const handleDeleteNote = async (id) => {
     try {
-      // Tambahkan konfirmasi
       const confirmDelete = window.confirm(
         "Yakin ingin menghapus catatan ini?"
       );
       if (!confirmDelete) return;
+
+      setIsLoading(true);
 
       const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
         method: "DELETE",
@@ -56,26 +61,25 @@ function ArchivePage() {
       });
 
       const result = await response.json();
-      console.log("Delete response:", result); // Debugging
 
       if (result.status !== "success") {
         throw new Error(result.message || "Gagal menghapus catatan");
       }
 
-      // Perbarui state secara langsung (optimistic update)
       setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
     } catch (error) {
       console.error("Delete error:", error);
-      alert(error.message);
-      // Refresh data jika error
+      setError("Gagal menghapus catatan: " + error.message);
       await fetchNotes();
+    } finally {
+      setIsLoading(false);
     }
   };
-
-  const handleUnarchive = async (id) => {
+  const handleToggleArchive = async () => {
     try {
+      const endpoint = note.archived ? "unarchive" : "archive";
       const response = await fetch(
-        `https://notes-api.dicoding.dev/v1/notes/${id}/unarchive`,
+        `https://notes-api.dicoding.dev/v1/notes/${id}/${endpoint}`,
         {
           method: "POST",
           headers: {
@@ -91,10 +95,13 @@ function ArchivePage() {
         throw new Error(responseJson.message);
       }
 
-      await fetchNotes();
-      navigate("/");
+      if (note.archived) {
+        navigate("/");
+      } else {
+        navigate("/archives");
+      }
     } catch (err) {
-      console.error("Gagal memindahkan catatan:", err);
+      alert("Gagal mengubah status arsip: " + err.message);
     }
   };
 
@@ -107,21 +114,30 @@ function ArchivePage() {
   }, [notes, keyword]);
 
   return (
-    <>
+    <div className="archive-page">
       <SearchBar keyword={keyword} onSearch={handleSearch} />
 
       <h2>Arsip Catatan</h2>
-      {filteredNotes.length > 0 ? (
+
+      {error && <div className="error-message">{error}</div>}
+
+      {isLoading ? (
+        <p>Memuat...</p>
+      ) : filteredNotes.length > 0 ? (
         <NoteList
           notes={filteredNotes}
           onDeleteNote={handleDeleteNote}
-          onArchive={handleUnarchive}
+          onArchive={handleToggleArchive}
           archiveText="Pindahkan"
         />
       ) : (
-        <p className="notes-list__empty-message">Tidak ada catatan arsip</p>
+        <p className="notes-list__empty-message">
+          {keyword
+            ? "Tidak ditemukan hasil pencarian"
+            : "Tidak ada catatan arsip"}
+        </p>
       )}
-    </>
+    </div>
   );
 }
 

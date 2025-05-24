@@ -8,24 +8,37 @@ function NoteItem({
   body,
   createdAt,
   archived,
-  refreshNotes,
   onDeleteNote,
   onArchiveNote,
   onUnarchiveNote,
 }) {
-  const handleDelete = async () => {
+  const handleDelete = async (e) => {
+    e.stopPropagation();
     try {
+      const confirmDelete = window.confirm(
+        "Yakin ingin menghapus catatan ini?"
+      );
+      if (!confirmDelete) return;
+
       await onDeleteNote(id);
-      refreshNotes();
     } catch (error) {
       alert(error.message);
     }
   };
 
-  const handleToggleArchive = async () => {
+  const handleToggleArchive = async (e) => {
+    e.stopPropagation();
     try {
-      archived ? await onUnarchiveNote(id) : await onArchiveNote(id);
-      refreshNotes();
+      const confirmAction = window.confirm(
+        archived ? "Pindahkan catatan ini ke aktif?" : "Arsipkan catatan ini?"
+      );
+      if (!confirmAction) return;
+
+      if (archived) {
+        await onUnarchiveNote(id);
+      } else {
+        await onArchiveNote(id);
+      }
     } catch (error) {
       alert(error.message);
     }
@@ -64,7 +77,6 @@ NoteItem.propTypes = {
   body: PropTypes.string.isRequired,
   createdAt: PropTypes.string.isRequired,
   archived: PropTypes.bool.isRequired,
-  refreshNotes: PropTypes.func.isRequired,
   onDeleteNote: PropTypes.func.isRequired,
   onArchiveNote: PropTypes.func.isRequired,
   onUnarchiveNote: PropTypes.func.isRequired,
