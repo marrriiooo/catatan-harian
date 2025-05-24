@@ -2,9 +2,28 @@ import React from "react";
 import PropTypes from "prop-types";
 import { NavLink } from "react-router-dom";
 import { useTheme } from "../contexts/ThemeContext";
+import { useLocale } from "../contexts/LocaleContext";
 
 const Navigation = ({ name, onLogout }) => {
   const { theme, toggleTheme } = useTheme();
+  const { locale, toggleLocale } = useLocale();
+
+  const text = {
+    home: locale === "id" ? "Beranda" : "Home",
+    archive: locale === "id" ? "Arsip" : "Archive",
+    logout: locale === "id" ? "Keluar" : "Logout",
+    greeting:
+      locale === "id" ? "Halo ini catatan" : "Hello, this is the notes of",
+    theme:
+      locale === "id"
+        ? theme === "light"
+          ? "🌙 Gelap"
+          : "☀️ Terang"
+        : theme === "light"
+        ? "🌙 Dark"
+        : "☀️ Light",
+    language: locale === "id" ? "🇬🇧 English" : "🇮🇩 Bahasa",
+  };
 
   return (
     <nav
@@ -23,11 +42,9 @@ const Navigation = ({ name, onLogout }) => {
             }
             style={{
               color: `var(--text-color)`,
-              backgroundColor: ({ isActive }) =>
-                isActive ? `var(--primary-color)` : "transparent",
             }}
           >
-            Beranda
+            {text.home}
           </NavLink>
         </li>
 
@@ -39,36 +56,38 @@ const Navigation = ({ name, onLogout }) => {
             }
             style={{
               color: `var(--text-color)`,
-              backgroundColor: ({ isActive }) =>
-                isActive ? `var(--primary-color)` : "transparent",
             }}
           >
-            Arsip
+            {text.archive}
           </NavLink>
         </li>
 
-        {/* Tambahkan tombol toggle tema */}
         <li>
           <button onClick={toggleTheme} className="theme-toggle">
-            {theme === "light" ? "🌙" : "☀️"}
+            {text.theme}
+          </button>
+        </li>
+
+        <li>
+          <button onClick={toggleLocale} className="locale-toggle">
+            {text.language}
           </button>
         </li>
 
         <li>
           <button onClick={onLogout} className="logout-button">
-            Logout
+            {text.logout}
           </button>
         </li>
       </ul>
 
       <span className="username" style={{ color: `var(--text-color)` }}>
-        Halo ini catatan {name}
+        {text.greeting} {name}
       </span>
     </nav>
   );
 };
 
-// Prop types tetap sama
 Navigation.propTypes = {
   name: PropTypes.string.isRequired,
   onLogout: PropTypes.func.isRequired,

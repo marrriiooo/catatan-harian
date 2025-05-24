@@ -4,18 +4,19 @@ import NoteList from "../components/NoteList";
 import SearchBar from "../components/SearchBar";
 import NoteForm from "../components/NoteForm";
 import { addNote } from "../utils/api";
+import { useLocale } from "../contexts/LocaleContext"; // ⬅️ Tambah ini
 
 const API_BASE_URL = "https://notes-api.dicoding.dev/v1";
 
 function HomePage() {
   const location = useLocation();
   const navigate = useNavigate();
+  const { t } = useLocale(); // ⬅️ Ambil fungsi translate
   const [notes, setNotes] = useState([]);
   const [keyword, setKeyword] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const [showArchiveSuccess, setShowArchiveSuccess] = useState(false);
 
-  // Memoized fetch function to prevent unnecessary recreations
   const fetchNotes = useCallback(async () => {
     setIsLoading(true);
     try {
@@ -27,7 +28,7 @@ function HomePage() {
       const result = await response.json();
 
       if (result.status !== "success") {
-        throw new Error(result.message || "Failed to fetch notes");
+        throw new Error(result.message || t("fetch_error"));
       }
 
       setNotes(result.data || []);
@@ -37,7 +38,7 @@ function HomePage() {
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  }, [t]);
 
   useEffect(() => {
     fetchNotes();
@@ -63,20 +64,18 @@ function HomePage() {
         navigate(location.pathname, { replace: true });
       } catch (err) {
         console.error("Error:", err);
-        alert("Gagal menambahkan catatan: " + err.message);
+        alert(`${t("add_note_failed")}: ` + err.message);
       } finally {
         setIsLoading(false);
       }
     },
-    [navigate, location.pathname]
+    [navigate, location.pathname, t]
   );
 
   const handleDeleteNote = useCallback(
     async (id) => {
       try {
-        const confirmDelete = window.confirm(
-          "Yakin ingin menghapus catatan ini?"
-        );
+        const confirmDelete = window.confirm(t("confirm_delete"));
         if (!confirmDelete) return;
 
         const response = await fetch(`${API_BASE_URL}/notes/${id}`, {
@@ -90,7 +89,7 @@ function HomePage() {
         const result = await response.json();
 
         if (result.status !== "success") {
-          throw new Error(result.message || "Gagal menghapus catatan");
+          throw new Error(result.message || t("delete_failed"));
         }
 
         setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
@@ -100,13 +99,13 @@ function HomePage() {
         fetchNotes();
       }
     },
-    [fetchNotes]
+    [fetchNotes, t]
   );
 
   const handleArchiveNote = useCallback(
     async (id) => {
       try {
-        const confirmArchive = window.confirm("Arsipkan catatan ini?");
+        const confirmArchive = window.confirm(t("confirm_archive"));
         if (!confirmArchive) return;
 
         const response = await fetch(`${API_BASE_URL}/notes/${id}/archive`, {
@@ -125,15 +124,15 @@ function HomePage() {
 
         const timer = setTimeout(() => {
           setShowArchiveSuccess(false);
-          navigate("/arsip");
+          navigate("/archives");
         }, 2000);
 
         return () => clearTimeout(timer);
       } catch (error) {
-        alert("Gagal mengarsipkan: " + error.message);
+        alert(t("archive_failed") + ": " + error.message);
       }
     },
-    [navigate]
+    [navigate, t]
   );
 
   const filteredNotes = React.useMemo(() => {
@@ -145,21 +144,19 @@ function HomePage() {
   return (
     <div className="home-page-container">
       {showArchiveSuccess && (
-        <div className="success-message">
-          Catatan berhasil diarsipkan! Mengarahkan ke halaman arsip...
-        </div>
+        <div className="success-message">{t("archive_success")}</div>
       )}
 
       <SearchBar keyword={keyword} onSearch={handleSearch} />
 
       <div className="note-form-container">
-        <h2>Tambah Catatan Baru</h2>
+        <h2>{t("add_new_note")}</h2>
         <NoteForm onAddNote={handleAddNote} isLoading={isLoading} />
       </div>
 
-      <h2>Catatan Aktif</h2>
+      <h2>{t("active_notes")}</h2>
       {isLoading ? (
-        <p>Memuat data...</p>
+        <p>{t("loading")}</p>
       ) : filteredNotes.length > 0 ? (
         <NoteList
           notes={filteredNotes}
@@ -168,9 +165,7 @@ function HomePage() {
         />
       ) : (
         <p style={{ color: `var(--text-color)` }}>
-          {keyword
-            ? "Tidak ditemukan hasil pencarian"
-            : "Tidak ada catatan aktif"}
+          {keyword ? t("search_not_found") : t("no_active_notes")}
         </p>
       )}
     </div>

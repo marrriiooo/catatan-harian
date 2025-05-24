@@ -7,12 +7,11 @@ import DetailPage from "./pages/DetailPage";
 import LoginPage from "./pages/LoginPage";
 import RegisterPage from "./pages/RegisterPage";
 import PropTypes from "prop-types";
-
 import { getUserLogged, putAccessToken } from "./utils/api";
 import { ErrorBoundary } from "react-error-boundary";
 import { ThemeProvider } from "./contexts/ThemeContext";
+import { LocaleProvider } from "./contexts/LocaleContext"; // ⬅️ Tambahkan ini
 
-// Error boundary component di luar class App
 function ErrorFallback({ error, resetErrorBoundary }) {
   return (
     <div className="error-boundary">
@@ -28,7 +27,6 @@ function ErrorFallback({ error, resetErrorBoundary }) {
 class App extends Component {
   constructor(props) {
     super(props);
-
     this.state = {
       authedUser: null,
       loading: true,
@@ -82,36 +80,48 @@ class App extends Component {
         onReset={() => window.location.reload()}
       >
         <ThemeProvider>
-          <div className="app-container">
-            {authedUser === null ? (
-              <Routes>
-                <Route
-                  path="/*"
-                  element={<LoginPage loginSuccess={this.onLoginSuccess} />}
-                />
-                <Route path="/register" element={<RegisterPage />} />
-              </Routes>
-            ) : (
-              <>
-                <header>
-                  <h1>Catatan Pribadi</h1>
-                  <Navigation name={authedUser.name} onLogout={this.onLogout} />
-                </header>
-                <main>
-                  <Routes>
-                    <Route path="/" element={<HomePage />} />
-                    <Route path="/archives" element={<ArchivePage />} />
-                    <Route path="/notes/:id" element={<DetailPage />} />
-                    <Route path="*" element={<Navigate to="/" replace />} />
-                  </Routes>
-                </main>
-              </>
-            )}
-          </div>
+          <LocaleProvider>
+            {" "}
+            {/* ⬅️ Tambahkan pembungkus LocaleProvider */}
+            <div className="app-container">
+              {authedUser === null ? (
+                <Routes>
+                  <Route
+                    path="/*"
+                    element={<LoginPage loginSuccess={this.onLoginSuccess} />}
+                  />
+                  <Route path="/register" element={<RegisterPage />} />
+                </Routes>
+              ) : (
+                <>
+                  <header>
+                    <h1>Catatan Pribadi</h1>
+                    <Navigation
+                      name={authedUser.name}
+                      onLogout={this.onLogout}
+                    />
+                  </header>
+                  <main>
+                    <Routes>
+                      <Route path="/" element={<HomePage />} />
+                      <Route path="/archives" element={<ArchivePage />} />
+                      <Route path="/notes/:id" element={<DetailPage />} />
+                      <Route path="*" element={<Navigate to="/" replace />} />
+                    </Routes>
+                  </main>
+                </>
+              )}
+            </div>
+          </LocaleProvider>
         </ThemeProvider>
       </ErrorBoundary>
     );
   }
 }
+
+ErrorFallback.propTypes = {
+  error: PropTypes.object.isRequired,
+  resetErrorBoundary: PropTypes.func.isRequired,
+};
 
 export default App;

@@ -336,24 +336,7 @@ p {
 }
 
 /* logout  */
-.logout-button {
-  font-weight: bold;
-  color: greenyellow;
-  font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
-  background-color: purple;
-  padding: 5px;
-  border-radius: 3px;
-  transition: all 0.3s ease; /* Animasi perubahan */
-}
 
-/* Efek saat hover */
-.logout-button:hover {
-  background-color: greenyellow; /* Warna lebih gelap */
-  color: purple;
-  cursor: pointer; /* Ubah kursor jadi tangan */
-  transform: scale(1.05); /* Sedikit membesar */
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Bayangan */
-}
 /* Dark theme */
 [data-theme="dark"] .logout-button {
   background-color: greenyellow;
@@ -389,19 +372,23 @@ span.username,
 
 /* thema togle */
 
-.theme-toggle {
+.theme-toggle,
+.logout-button,
+.locale-toggle {
   background-color: purple;
-  color: black;
-  border: 1px solid black;
+  color: greenyellow;
+  border: 2px solid black;
   margin-right: -10px;
   padding: 6px;
-  border-radius: 25%;
+  border-radius: 3px;
   cursor: pointer;
   font-weight: bold;
   transition: background-color 0.3s ease, color 0.3s ease, transform 0.2s ease;
 }
 
-.theme-toggle:hover {
+.theme-toggle:hover,
+.logout-button:hover,
+.locale-toggle:hover {
   background-color: greenyellow;
   color: white;
   transform: scale(1.05); /* efek "membesar" saat hover */
