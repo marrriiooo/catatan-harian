@@ -75,33 +75,37 @@ function ArchivePage() {
       setIsLoading(false);
     }
   };
-  const handleToggleArchive = async () => {
+
+  const handleUnarchiveNote = async (id) => {
     try {
-      const endpoint = note.archived ? "unarchive" : "archive";
-      const response = await fetch(
-        `https://notes-api.dicoding.dev/v1/notes/${id}/${endpoint}`,
-        {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
-            "Content-Type": "application/json",
-          },
-        }
+      const confirmUnarchive = window.confirm(
+        "Pindahkan catatan ini ke aktif?"
       );
+      if (!confirmUnarchive) return;
 
-      const responseJson = await response.json();
+      setIsLoading(true);
 
-      if (responseJson.status !== "success") {
-        throw new Error(responseJson.message);
+      const response = await fetch(`${API_BASE_URL}/notes/${id}/unarchive`, {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${localStorage.getItem("accessToken")}`,
+          "Content-Type": "application/json",
+        },
+      });
+
+      const result = await response.json();
+
+      if (result.status !== "success") {
+        throw new Error(result.message || "Gagal memindahkan catatan");
       }
 
-      if (note.archived) {
-        navigate("/");
-      } else {
-        navigate("/archives");
-      }
-    } catch (err) {
-      alert("Gagal mengubah status arsip: " + err.message);
+      setNotes((prevNotes) => prevNotes.filter((note) => note.id !== id));
+      navigate("/");
+    } catch (error) {
+      console.error("Unarchive error:", error);
+      setError("Gagal memindahkan catatan: " + error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -127,7 +131,7 @@ function ArchivePage() {
         <NoteList
           notes={filteredNotes}
           onDeleteNote={handleDeleteNote}
-          onArchive={handleToggleArchive}
+          onUnarchiveNote={handleUnarchiveNote} // Changed from onArchive to onUnarchiveNote
           archiveText="Pindahkan"
         />
       ) : (

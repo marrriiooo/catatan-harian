@@ -22,15 +22,16 @@ function NoteItem({
 
       await onDeleteNote(id);
     } catch (error) {
-      alert(error.message);
+      alert("Gagal menghapus catatan: " + error.message);
     }
   };
 
   const handleToggleArchive = async (e) => {
     e.stopPropagation();
     try {
+      const action = archived ? "memindahkan ke aktif" : "mengarsipkan";
       const confirmAction = window.confirm(
-        archived ? "Pindahkan catatan ini ke aktif?" : "Arsipkan catatan ini?"
+        `Yakin ingin ${action} catatan ini?`
       );
       if (!confirmAction) return;
 
@@ -40,7 +41,11 @@ function NoteItem({
         await onArchiveNote(id);
       }
     } catch (error) {
-      alert(error.message);
+      alert(
+        `Gagal ${archived ? "memindahkan" : "mengarsipkan"} catatan: ${
+          error.message
+        }`
+      );
     }
   };
 
